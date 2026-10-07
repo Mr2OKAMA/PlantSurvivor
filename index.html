@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>微生物サバイバーズ</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #04121c; overflow: hidden; touch-action: none; font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif; color: #e8fff8; }
+  #game { position: fixed; inset: 0; }
+  #hud { position: fixed; top: 0; left: 0; right: 0; pointer-events: none; padding: 6px 10px; font-size: 14px; text-shadow: 0 0 3px #000; }
+  #hud .bar { height: 10px; background: #123; border: 1px solid #5ab; margin-bottom: 3px; }
+  #hud .bar > div { height: 100%; width: 0; }
+  #xpbar > div { background: #4df; } #hpbar > div { background: #f55; }
+  #skills { margin-top: 3px; font-size: 12px; }
+  .overlay { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(0,10,20,.82); z-index: 10; }
+  .overlay.show { display: flex; }
+  .panel { max-width: 640px; width: 92%; max-height: 92%; overflow-y: auto; background: #0b2535; border: 2px solid #5ab; border-radius: 10px; padding: 14px; text-align: center; }
+  .panel h2 { margin: 4px 0 10px; }
+  button, .card { font: inherit; color: inherit; background: #14425c; border: 2px solid #6cd; border-radius: 8px; padding: 10px; margin: 5px 0; width: 100%; cursor: pointer; text-align: left; }
+  button:hover, .card:hover { background: #1d6a8f; }
+  button:disabled { opacity: .45; cursor: default; }
+  .card .t { font-weight: bold; } .card .d { font-size: 13px; opacity: .9; } .card.evo { border-color: #fd4; }
+  .row { display: flex; gap: 8px; } .row > * { flex: 1; }
+  #joy { position: fixed; width: 110px; height: 110px; margin: -55px 0 0 -55px; border: 2px solid #8fe; border-radius: 50%; opacity: .5; display: none; pointer-events: none; z-index: 5; }
+  #joy > div { position: absolute; width: 50px; height: 50px; left: 30px; top: 30px; border-radius: 50%; background: #8fe; }
+</style>
+</head>
+<body>
+<div id="game"></div>
+<div id="hud">
+  <div class="bar" id="hpbar"><div></div></div>
+  <div class="bar" id="xpbar"><div></div></div>
+  <div id="info"></div>
+  <div id="skills"></div>
+</div>
+<div id="joy"><div></div></div>
+
+<div class="overlay show" id="menu"><div class="panel" id="menuPanel"></div></div>
+<div class="overlay" id="levelup"><div class="panel"><h2 id="luTitle">レベルアップ！</h2><div id="luCards"></div><div class="row"><button id="rerollBtn"></button></div></div></div>
+<div class="overlay" id="result"><div class="panel" id="resultPanel"></div></div>
+
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

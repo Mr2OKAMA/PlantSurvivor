@@ -649,6 +649,11 @@ class MainScene extends Phaser.Scene {
       const tex = this.textures.addCanvas('ch_' + c.id, makeSpriteCanvas(c.id, 1));
       tex.setFilter(Phaser.Textures.FilterMode.NEAREST);
     }
+    for (const id in GAME_CONFIG.敵) {
+      const tex = this.textures.addCanvas('en_' + id, makeSpriteCanvas(id, 1));
+      tex.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    }
+    this.enemyImgs = [];
     this.playerImg = this.add.image(0, 0, 'ch_' + GAME_CONFIG.キャラクター[0].id).setScale(2.5).setVisible(false);
     showMenu();
   }
@@ -658,7 +663,8 @@ class MainScene extends Phaser.Scene {
     const g = this.g, W = this.scale.width, H = this.scale.height;
     g.clear();
     this.playerImg.setVisible(false);
-    if (!R) { this.drawGrid(g, W, H, 0, 0); return; }
+    this.enemyImgUsed = 0;
+    if (!R) { this.enemyImgs.forEach(i => i.setVisible(false)); this.drawGrid(g, W, H, 0, 0); return; }
 
     if (G.state === 'play' && !R.over) this.step(dt);
     else if (R.over && G.state === 'play') G.state = 'over';
@@ -667,6 +673,7 @@ class MainScene extends Phaser.Scene {
     const sx = x => x - cx + W / 2, sy = y => y - cy + H / 2;
     this.drawGrid(g, W, H, cx, cy);
     this.drawWorld(g, W, H, sx, sy);
+    for (let i = this.enemyImgUsed; i < this.enemyImgs.length; i++) this.enemyImgs[i].setVisible(false);
     for (const q of popups) {
       if (q.t <= 0) { q.obj.setVisible(false); continue; }
       if (G.state === 'play') { q.t -= dt; q.y -= 30 * dt; }
@@ -710,7 +717,11 @@ class MainScene extends Phaser.Scene {
     }
     for (const e of R.enemies) {
       if (!vis(e.x, e.y, e.r + 4)) continue;
-      g.fillStyle(e.flash > 0 ? 0xffffff : e.def.色, 1).fillCircle(sx(e.x), sy(e.y), e.r);
+      const img = this.enemyImgs[this.enemyImgUsed] || (this.enemyImgs[this.enemyImgUsed] = this.add.image(0, 0, 'en_bod'));
+      this.enemyImgUsed++;
+      img.setTexture('en_' + e.key).setPosition(sx(e.x), sy(e.y)).setScale(e.r * 2.4 / 16)
+        .setFlipX(R.p.x < e.x).setVisible(true);
+      if (e.flash > 0) img.setTintFill(0xffffff); else img.clearTint();
       if (e.def.ボス) {
         g.lineStyle(3, 0xff4444, 1).strokeCircle(sx(e.x), sy(e.y), e.r);
         g.fillStyle(0x330000, 1).fillRect(sx(e.x) - 30, sy(e.y) - e.r - 12, 60, 6);

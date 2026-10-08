@@ -117,3 +117,40 @@ Object.assign(PIXEL_SPRITES, {
     'obbbbbbbbbbbbbbo', 'obbrryybbbrryybo', 'obbrrrbbbbrrrbbo', 'obbbbbbbbbbbbbdo', 'obbbotbottbobbdo',
     'obbbottoottotbdo', '.obbbotbtbtobbdo', '.oddbbbbbbbbddo.', '..oodddddddddoo.', '.sos.oooooooo.so', '..s..........s..' ] },
 });
+
+// かわいく見せる後処理：きらきらの大きな目・ほっぺ・にっこり口を追加する
+(function cutifyEnemies() {
+  const CUTE = ['bod', 'ss', 'ammonia', 'nocardia', 'bulking', 'mite', 'scum', 'phosphorus', 'nitrate', 'coliform',
+    'foam', 'fog', 'detergent', 'isopod', 'pathogen', 'sludgeball', 'heavymetal'];
+  const setc = (rows, y, x, ch, only) => {
+    if (y < 0 || y >= rows.length || x < 0 || x >= 16 || !only.includes(rows[y][x])) return;
+    rows[y] = rows[y].slice(0, x) + ch + rows[y].slice(x + 1);
+  };
+  for (const id of CUTE) {
+    const s = PIXEL_SPRITES[id];
+    if (!s) continue;
+    s.パレット = { ...s.パレット, q: '#ff8fa8' };
+    const rows = s.絵.slice();
+    const eyes = [];
+    for (let y = 0; y < rows.length - 1; y++) {
+      for (let x = 0; x < 15; x++) {
+        if (rows[y].substr(x, 2) === 'ee' && /^(pe|ep)$/.test(rows[y + 1].substr(x, 2))) eyes.push([y, x]);
+      }
+      if (eyes.length) break;
+    }
+    if (eyes.length !== 2) continue;
+    const [[y, xl], [, xr]] = eyes;
+    const body = 'bld';
+    // 目：黒目を大きく、左上にハイライト
+    for (const x of [xl, xr]) {
+      setc(rows, y, x, 'e', 'e'); setc(rows, y, x + 1, 'p', 'e');
+      setc(rows, y + 1, x, 'p', 'pe'); setc(rows, y + 1, x + 1, 'p', 'pe');
+    }
+    // ほっぺ
+    setc(rows, y + 2, xl - 1, 'q', body); setc(rows, y + 2, xr + 2, 'q', body);
+    // にっこり口
+    const mid = Math.floor((xl + 1 + xr) / 2);
+    setc(rows, y + 2, mid, 'p', body); setc(rows, y + 2, mid + 1, 'p', body);
+    s.絵 = rows;
+  }
+})();

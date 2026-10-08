@@ -451,6 +451,15 @@ function openChest() {
       return;
     }
   }
+  const results = GAME_CONFIG.進化.map(ev => ev.結果);
+  const ups = Object.keys(p.skills).filter(id => !results.includes(id) && p.skills[id] < GAME_CONFIG.スキル最大レベル);
+  if (ups.length) {
+    const id = ups[Math.floor(Math.random() * ups.length)];
+    p.skills[id]++;
+    toast(`宝箱：${SK[id].名前} が Lv${p.skills[id]} に上がった`);
+    recalc();
+    return;
+  }
   p.hp = Math.min(p.maxHp, p.hp + p.maxHp * 0.3);
   toast('宝箱：HPを回復した');
 }
@@ -712,8 +721,16 @@ class MainScene extends Phaser.Scene {
     }
     for (const o of R.orbs) if (vis(o.x, o.y, 10)) g.fillStyle(o.v >= 5 ? 0xffe14d : 0x4dffb0, 1).fillCircle(sx(o.x), sy(o.y), o.v >= 5 ? 6 : 4);
     for (const c of R.chests) {
-      g.fillStyle(0xffd34d, 1).fillRect(sx(c.x) - 12, sy(c.y) - 9, 24, 18);
-      g.lineStyle(2, 0x7a5a00, 1).strokeRect(sx(c.x) - 12, sy(c.y) - 9, 24, 18);
+      const X = sx(c.x), Y = sy(c.y);
+      g.fillStyle(0x000000, 0.3).fillRect(X - 14, Y + 9, 28, 4);
+      g.fillStyle(0x8b5a2b, 1).fillRect(X - 13, Y - 3, 26, 14);
+      g.fillStyle(0xa8732f, 1).fillRect(X - 13, Y - 11, 26, 9);
+      g.fillStyle(0xc98f45, 1).fillRect(X - 11, Y - 10, 22, 3);
+      g.fillStyle(0x5a5a66, 1).fillRect(X - 13, Y - 4, 26, 3);
+      g.fillStyle(0x5a5a66, 1).fillRect(X - 9, Y - 11, 3, 22).fillRect(X + 6, Y - 11, 3, 22);
+      g.fillStyle(0xffd34d, 1).fillRect(X - 3, Y - 6, 6, 7);
+      g.fillStyle(0x3a2200, 1).fillRect(X - 1, Y - 3, 2, 3);
+      g.lineStyle(2, 0x3a2200, 1).strokeRect(X - 13, Y - 11, 26, 22);
     }
     for (const e of R.enemies) {
       if (!vis(e.x, e.y, e.r + 4)) continue;

@@ -750,7 +750,7 @@ class MainScene extends Phaser.Scene {
     const blink = p.inv > 0 && Math.floor(p.inv * 20) % 2 === 0;
     if (!blink) {
       const X = sx(p.x), Y = sy(p.y);
-      this.playerImg.setTexture('ch_' + R.ch.id).setPosition(X, Y).setFlipX(Math.cos(p.face) < 0).setVisible(true);
+      this.playerImg.setTexture('ch_' + R.ch.id).setPosition(X, Y).setFlipX(Math.cos(p.face) > 0).setVisible(true);
     }
     if (R.flash > 0) g.fillStyle(0xff0000, 0.25 * (R.flash / 0.15)).fillRect(0, 0, W, H);
   }

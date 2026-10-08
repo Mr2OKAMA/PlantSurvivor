@@ -1,4 +1,12 @@
 # PlantSurvivor
+
+## 🎮 ゲームを開く
+
+👉 **[ブラウザでプレイする](https://mr2okama.github.io/PlantSurvivor/)**
+
+> リンクを開くには、リポジトリの **Settings → Pages** で Source を「Deploy from a branch」、Branch を `main`（`/ (root)`）に設定して GitHub Pages を有効にしてください。
+> ローカルで遊ぶ場合は `index.html` をブラウザで開いてください。
+
 # 役割と概要
 あなたはPhaser.js (v3) と JavaScript (ES6+) に精通した2D Webゲームデベロッパーです。
 『Vampire Survivors』のゲームシステムを完全踏襲した、スマホ・PCブラウザ対応の2Dゲーム『Microbe Survivors（微生物サバイバーズ）』を完全日本語で開発します。

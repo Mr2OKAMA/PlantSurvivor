@@ -544,7 +544,7 @@ function showMenu() {
   G.state = 'menu';
   const md = Meta.data;
   const chars = GAME_CONFIG.キャラクター.map(c => `<button class="char" data-id="${c.id}" ${c.id === G.selChar ? 'style="border-color:#fd4"' : ''}>
-      <div class="t">${c.名前} <small>（${c.タイプ}）</small></div>
+      <div class="t"><img src="${makeSpriteCanvas(c.id, 4).toDataURL()}" width="48" height="48" style="image-rendering:pixelated;vertical-align:middle;margin-right:6px">${c.名前} <small>（${c.タイプ}）</small></div>
       <div class="d">${c.説明}<br>HP ${c.HP} ／ 速度 ${c.速度} ／ 初期スキル：${SK[c.初期スキル].名前}</div></button>`).join('');
   const shop = GAME_CONFIG.ショップ.map(s => {
     const n = md[s.id], maxed = n >= s.最大, cost = s.価格(n);
@@ -645,6 +645,11 @@ class MainScene extends Phaser.Scene {
   create() {
     G.scene = this;
     this.g = this.add.graphics();
+    for (const c of GAME_CONFIG.キャラクター) {
+      const tex = this.textures.addCanvas('ch_' + c.id, makeSpriteCanvas(c.id, 1));
+      tex.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    }
+    this.playerImg = this.add.image(0, 0, 'ch_' + GAME_CONFIG.キャラクター[0].id).setScale(2.5).setVisible(false);
     showMenu();
   }
 
@@ -652,6 +657,7 @@ class MainScene extends Phaser.Scene {
     const dt = Math.min(delta / 1000, 0.05);
     const g = this.g, W = this.scale.width, H = this.scale.height;
     g.clear();
+    this.playerImg.setVisible(false);
     if (!R) { this.drawGrid(g, W, H, 0, 0); return; }
 
     if (G.state === 'play' && !R.over) this.step(dt);
@@ -733,9 +739,7 @@ class MainScene extends Phaser.Scene {
     const blink = p.inv > 0 && Math.floor(p.inv * 20) % 2 === 0;
     if (!blink) {
       const X = sx(p.x), Y = sy(p.y);
-      g.fillStyle(R.ch.色, 1).fillCircle(X, Y, 12);
-      g.lineStyle(2, 0xffffff, 0.9).strokeCircle(X, Y, 12);
-      g.fillStyle(0x003344, 1).fillCircle(X + Math.cos(p.face) * 5 - 3, Y + Math.sin(p.face) * 5 - 2, 2).fillCircle(X + Math.cos(p.face) * 5 + 3, Y + Math.sin(p.face) * 5 - 2, 2);
+      this.playerImg.setTexture('ch_' + R.ch.id).setPosition(X, Y).setFlipX(Math.cos(p.face) < 0).setVisible(true);
     }
     if (R.flash > 0) g.fillStyle(0xff0000, 0.25 * (R.flash / 0.15)).fillRect(0, 0, W, H);
   }

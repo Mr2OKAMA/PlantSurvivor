@@ -71,21 +71,21 @@ const GAME_CONFIG = {
     ammonia:   { 名前: 'アンモニア', hp: 10, 速度: 55, 攻撃: 4, 経験値: 1, 半径: 9, 色: 0x7ad1ff },
     nocardia:  { 名前: 'ノカルディア', hp: 14, 速度: 50, 攻撃: 5, 経験値: 2, 半径: 10, 色: 0x9b6b3a },
     bulking:   { 名前: 'バルキング糸状菌', hp: 20, 速度: 50, 攻撃: 5, 経験値: 2, 半径: 11, 色: 0xd6c36b },
-    nematode:  { 名前: 'センチュウ', hp: 25, 速度: 70, 攻撃: 6, 経験値: 2, 半径: 10, 色: 0xf1d0b0 },
-    mite:      { 名前: 'ダニ類', hp: 30, 速度: 80, 攻撃: 7, 経験値: 3, 半径: 11, 色: 0xc44d3a },
+    nematode:  { 名前: 'センチュウ', hp: 40, 速度: 125, 攻撃: 8, 経験値: 2, 半径: 10, 色: 0xf1d0b0, 行動: 'fast' },
+    mite:      { 名前: 'ダニ類', hp: 45, 速度: 140, 攻撃: 9, 経験値: 3, 半径: 11, 色: 0xc44d3a, 行動: 'fast' },
     scum:      { 名前: 'スカム', hp: 60, 速度: 30, 攻撃: 8, 経験値: 4, 半径: 16, 色: 0x6e5a3f },
-    phosphorus:{ 名前: 'リン', hp: 18, 速度: 60, 攻撃: 5, 経験値: 2, 半径: 9, 色: 0xff9f43 },
-    nitrate:   { 名前: '硝酸性窒素', hp: 22, 速度: 60, 攻撃: 6, 経験値: 2, 半径: 9, 色: 0x4dd0a8 },
-    coliform:  { 名前: '大腸菌群', hp: 16, 速度: 75, 攻撃: 5, 経験値: 2, 半径: 8, 色: 0xe5e58c },
-    foam:      { 名前: '泡沫(ファーミング)', hp: 40, 速度: 35, 攻撃: 6, 経験値: 3, 半径: 15, 色: 0xf4f4f4 },
-    fog:       { 名前: '油脂(FOG)', hp: 70, 速度: 32, 攻撃: 9, 経験値: 5, 半径: 16, 色: 0xe8c547 },
-    detergent: { 名前: '界面活性剤', hp: 35, 速度: 65, 攻撃: 7, 経験値: 3, 半径: 11, 色: 0xe66bd0 },
-    chironomid:{ 名前: 'ユスリカ幼虫', hp: 55, 速度: 70, 攻撃: 9, 経験値: 4, 半径: 13, 色: 0xd34a4a },
-    isopod:    { 名前: 'ミズムシ', hp: 80, 速度: 60, 攻撃: 10, 経験値: 5, 半径: 14, 色: 0x7d7d96 },
-    h2s:       { 名前: '硫化水素', hp: 45, 速度: 85, 攻撃: 9, 経験値: 4, 半径: 11, 色: 0xb4d332 },
-    heavymetal:{ 名前: '重金属', hp: 120, 速度: 45, 攻撃: 12, 経験値: 7, 半径: 15, 色: 0x6c7a89 },
-    pathogen:  { 名前: '病原菌', hp: 50, 速度: 90, 攻撃: 11, 経験値: 5, 半径: 10, 色: 0xff4d6d },
-    sludgeball:{ 名前: '汚泥浮上塊', hp: 150, 速度: 40, 攻撃: 13, 経験値: 8, 半径: 20, 色: 0x4a3a2a },
+    phosphorus:{ 名前: 'リン', hp: 30, 速度: 50, 攻撃: 8, 経験値: 2, 半径: 9, 色: 0xff9f43, 行動: 'ranged' },
+    nitrate:   { 名前: '硝酸性窒素', hp: 40, 速度: 50, 攻撃: 9, 経験値: 2, 半径: 9, 色: 0x4dd0a8, 行動: 'ranged' },
+    coliform:  { 名前: '大腸菌群', hp: 40, 速度: 110, 攻撃: 5, 経験値: 10, 半径: 8, 色: 0xe5e58c, 行動: 'flee' },
+    foam:      { 名前: '泡沫(ファーミング)', hp: 70, 速度: 45, 攻撃: 9, 経験値: 3, 半径: 15, 色: 0xf4f4f4, 行動: 'ranged' },
+    fog:       { 名前: '油脂(FOG)', hp: 260, 速度: 32, 攻撃: 12, 経験値: 5, 半径: 16, 色: 0xe8c547, 行動: 'tank' },
+    detergent: { 名前: '界面活性剤', hp: 50, 速度: 95, 攻撃: 7, 経験値: 15, 半径: 11, 色: 0xe66bd0, 行動: 'flee' },
+    chironomid:{ 名前: 'ユスリカ幼虫', hp: 35, 速度: 120, 攻撃: 9, 経験値: 4, 半径: 13, 色: 0xd34a4a, 行動: 'swarm' },
+    isopod:    { 名前: 'ミズムシ', hp: 300, 速度: 55, 攻撃: 14, 経験値: 5, 半径: 14, 色: 0x7d7d96, 行動: 'tank' },
+    h2s:       { 名前: '硫化水素', hp: 60, 速度: 150, 攻撃: 11, 経験値: 4, 半径: 11, 色: 0xb4d332, 行動: 'fast' },
+    heavymetal:{ 名前: '重金属', hp: 600, 速度: 45, 攻撃: 18, 経験値: 7, 半径: 15, 色: 0x6c7a89, 行動: 'tank' },
+    pathogen:  { 名前: '病原菌', hp: 70, 速度: 165, 攻撃: 13, 経験値: 5, 半径: 10, 色: 0xff4d6d, 行動: 'fast' },
+    sludgeball:{ 名前: '汚泥浮上塊', hp: 900, 速度: 38, 攻撃: 20, 経験値: 8, 半径: 20, 色: 0x4a3a2a, 行動: 'tank' },
     boss1:     { 名前: '【中ボス】巨大スカムマス', hp: 1500, 速度: 45, 攻撃: 18, 経験値: 60, 半径: 42, 色: 0x7a5a30, ボス: true },
     boss2:     { 名前: '【中ボス】ユスリカ大群体', hp: 4000, 速度: 60, 攻撃: 24, 経験値: 100, 半径: 46, 色: 0xb02a2a, ボス: true },
     boss3:     { 名前: '【最終ボス】汚泥バルキング大怪獣', hp: 12000, 速度: 55, 攻撃: 32, 経験値: 300, 半径: 60, 色: 0x3b2a4a, ボス: true, 最終: true },
@@ -100,8 +100,8 @@ const GAME_CONFIG = {
     { 開始分: 3, 終了分: 5, 間隔: 6.0, 出現: [{ 敵: 'scum', 数: 2 }] },
     { 開始分: 4, 終了分: 7, 間隔: 3.0, 出現: [{ 敵: 'mite', 数: 3 }, { 敵: 'nitrate', 数: 2 }, { 敵: 'coliform', 数: 2 }] },
     { 開始分: 5, 終了分: 8, 間隔: 5.0, 出現: [{ 敵: 'foam', 数: 2 }, { 敵: 'detergent', 数: 3 }] },
-    { 開始分: 6, 終了分: 9, 間隔: 4.0, 出現: [{ 敵: 'fog', 数: 2 }, { 敵: 'chironomid', 数: 3 }] },
-    { 開始分: 7, 終了分: 10, 間隔: 4.0, 出現: [{ 敵: 'isopod', 数: 2 }, { 敵: 'h2s', 数: 3 }, { 敵: 'pathogen', 数: 2 }] },
+    { 開始分: 6, 終了分: 9, 間隔: 4.0, 出現: [{ 敵: 'fog', 数: 2 }, { 敵: 'chironomid', 数: 12 }] },
+    { 開始分: 7, 終了分: 10, 間隔: 4.0, 出現: [{ 敵: 'isopod', 数: 2 }, { 敵: 'h2s', 数: 4 }, { 敵: 'pathogen', 数: 3 }, { 敵: 'chironomid', 数: 15 }] },
     { 開始分: 8, 終了分: 11, 間隔: 5.0, 出現: [{ 敵: 'heavymetal', 数: 2 }, { 敵: 'sludgeball', 数: 1 }] },
   ],
   ボス出現: [
@@ -163,7 +163,7 @@ function newRun() {
   R = {
     ch, t: 0, kills: 0, over: false, won: false,
     p: { x: 0, y: 0, hp: maxHp, maxHp, inv: 0, lv: 1, xp: 0, xpNext: xpNeed(1), skills: {}, timers: {}, mods: null, face: 0 },
-    enemies: [], bullets: [], orbs: [], chests: [], zones: [], fx: [], novas: [],
+    enemies: [], bullets: [], ebullets: [], orbs: [], chests: [], zones: [], fx: [], novas: [],
     waveT: GAME_CONFIG.ウェーブ.map(() => 0), bossDone: {}, nextId: 1,
     pending: 0, rerolls: Meta.data.reroll, toast: '', toastT: 0, hudT: 0, flash: 0,
     orbitAng: 0,
@@ -407,7 +407,19 @@ function updateEnemies(dt) {
     if (d > 1400) { e.x = p.x - dx / d * 700; e.y = p.y - dy / d * 700; }
     const sp = e.def.速度 * (e.slow > 0 ? 0.4 : 1);
     e.slow -= dt;
-    e.x += dx / d * sp * dt; e.y += dy / d * sp * dt;
+    const beh = e.def.行動;
+    let dir = 1;
+    if (beh === 'ranged') {
+      if (d < 260) dir = d < 200 ? -0.5 : 0;
+      e.shot = (e.shot ?? rnd(0, 2.5)) - dt;
+      if (e.shot <= 0 && d < 520) {
+        e.shot = 2.5;
+        R.ebullets.push({ x: e.x, y: e.y, vx: dx / d * 220, vy: dy / d * 220, dmg: e.def.攻撃, r: 5, life: 4 });
+      }
+    } else if (beh === 'flee') {
+      dir = d < 230 ? -1 : (d > 330 ? 1 : 0);
+    }
+    e.x += dx / d * sp * dt * dir; e.y += dy / d * sp * dt * dir;
     if (p.inv <= 0 && d < e.r + 10) {
       const dmg = Math.max(1, e.def.攻撃 - R.ch.防御);
       p.hp -= dmg; p.inv = 0.5; R.flash = 0.15;
@@ -415,6 +427,15 @@ function updateEnemies(dt) {
     }
   }
   R.enemies = R.enemies.filter(e => !e.dead);
+  for (const b of R.ebullets) {
+    b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt;
+    if (p.inv <= 0 && Math.hypot(p.x - b.x, p.y - b.y) < b.r + 10) {
+      const dmg = Math.max(1, b.dmg - R.ch.防御);
+      p.hp -= dmg; p.inv = 0.5; R.flash = 0.15; b.life = 0;
+      popup(p.x, p.y - 14, '-' + dmg, '#ff6666');
+    }
+  }
+  R.ebullets = R.ebullets.filter(b => b.life > 0);
   if (p.hp <= 0) lose();
 }
 
@@ -762,6 +783,7 @@ class MainScene extends Phaser.Scene {
     }
     for (const n of R.novas) g.lineStyle(4, n.color, 0.8).strokeCircle(sx(n.x), sy(n.y), n.r);
     for (const b of R.bullets) if (vis(b.x, b.y, b.r + 4)) g.fillStyle(b.color, 1).fillCircle(sx(b.x), sy(b.y), b.r);
+    for (const b of R.ebullets) if (vis(b.x, b.y, b.r + 4)) g.fillStyle(0xff3355, 1).fillCircle(sx(b.x), sy(b.y), b.r);
     for (const f of R.fx) g.lineStyle(3, f.color, Math.min(1, f.t / 0.15)).lineBetween(sx(f.x1), sy(f.y1), sx(f.x2), sy(f.y2));
     // プレイヤー
     const blink = p.inv > 0 && Math.floor(p.inv * 20) % 2 === 0;

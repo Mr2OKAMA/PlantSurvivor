@@ -115,6 +115,21 @@ const GAME_CONFIG = {
   ショップ: [
     { id: 'reroll', 名前: 'リロール回数 +1', 説明: 'レベルアップ時の選択肢を引き直せる回数が増える。', 最大: 3, 価格: n => 150 * (n + 1) },
     { id: 'hp', 名前: '基礎HP +10%', 説明: '全キャラの最大HPが永続的に増える。', 最大: 5, 価格: n => 100 * (n + 1) },
+    { id: 'speed', 名前: '移動速度 +5%', 説明: '移動速度が永続的に上がる。', 最大: 5, 価格: n => 100 * (n + 1) },
+    { id: 'power', 名前: '与ダメージ +5%', 説明: '与えるダメージが永続的に増える。', 最大: 5, 価格: n => 120 * (n + 1) },
+    { id: 'area', 名前: '攻撃範囲 +5%', 説明: '範囲攻撃・周回スキルの範囲が広がる。', 最大: 5, 価格: n => 100 * (n + 1) },
+    { id: 'cd', 名前: 'クールダウン短縮 -3%', 説明: 'スキルの冷却時間が短くなる。', 最大: 5, 価格: n => 130 * (n + 1) },
+    { id: 'xp', 名前: '経験値獲得量 +10%', 説明: '獲得する経験値が増える。', 最大: 5, 価格: n => 100 * (n + 1) },
+    { id: 'magnet', 名前: '吸引範囲 +10%', 説明: '経験値・アイテムの吸引範囲が広がる。', 最大: 5, 価格: n => 80 * (n + 1) },
+    { id: 'regen', 名前: 'HP自然回復 +0.2/秒', 説明: 'HPが毎秒自動回復する。', 最大: 5, 価格: n => 120 * (n + 1) },
+    { id: 'guard', 名前: '被ダメージ軽減 -3%', 説明: '受けるダメージが減る。', 最大: 5, 価格: n => 130 * (n + 1) },
+    { id: 'startLv', 名前: '開始レベル +1', 説明: 'ラン開始時のレベルが上がる。', 最大: 3, 価格: n => 400 * (n + 1) },
+    { id: 'revive', 名前: '復活 +1', 説明: '倒れてもHP半分で復活する（1ランにつき購入回数分）。', 最大: 1, 価格: n => 600 },
+    { id: 'skip', 名前: 'スキップ回数 +1', 説明: 'レベルアップ時に選択を見送り、HPを15%回復＋10pt獲得できる。', 最大: 3, 価格: n => 120 * (n + 1) },
+    { id: 'block', 名前: 'ブロック回数 +1', 説明: 'レベルアップ時にスキルを1つ、そのラン中の選択肢から除外できる。', 最大: 3, 価格: n => 150 * (n + 1) },
+    { id: 'pointMul', 名前: '獲得ポイント +10%', 説明: 'ラン終了時の獲得ポイントが増える。', 最大: 5, 価格: n => 150 * (n + 1) },
+    { id: 'rarity', 名前: '選択肢の質アップ', 説明: '育成中のスキルが選択肢に出やすくなる。', 最大: 3, 価格: n => 150 * (n + 1) },
+    { id: 'bossBonus', 名前: 'ボス撃破ボーナス', 説明: 'ボス撃破ごとに追加ポイント +50。', 最大: 3, 価格: n => 150 * (n + 1) },
   ],
 };
 
@@ -122,7 +137,8 @@ const GAME_CONFIG = {
 // 永続データ (localStorage)
 // ============================================================
 const Meta = {
-  data: { points: 0, clears: 0, choices4: false, reroll: 0, hp: 0 },
+  data: { points: 0, clears: 0, choices4: false, reroll: 0, hp: 0, speed: 0, power: 0, area: 0, cd: 0, xp: 0, magnet: 0, regen: 0, guard: 0,
+    startLv: 0, revive: 0, skip: 0, block: 0, pointMul: 0, rarity: 0, bossBonus: 0 },
   load() {
     try {
       const s = localStorage.getItem(GAME_CONFIG.メタ保存キー);
@@ -165,9 +181,12 @@ function newRun() {
     p: { x: 0, y: 0, hp: maxHp, maxHp, inv: 0, lv: 1, xp: 0, xpNext: xpNeed(1), skills: {}, timers: {}, mods: null, face: 0 },
     enemies: [], bullets: [], ebullets: [], orbs: [], chests: [], zones: [], fx: [], novas: [],
     waveT: GAME_CONFIG.ウェーブ.map(() => 0), bossDone: {}, nextId: 1,
-    pending: 0, rerolls: Meta.data.reroll, toast: '', toastT: 0, hudT: 0, flash: 0,
+    pending: 0, rerolls: Meta.data.reroll, skips: Meta.data.skip, blocks: Meta.data.block, blocked: new Set(),
+    revives: Meta.data.revive, bossKills: 0, bonusPts: 0, toast: '', toastT: 0, hudT: 0, flash: 0,
     orbitAng: 0,
   };
+  const sl = 1 + Meta.data.startLv;
+  R.p.lv = sl; R.p.xpNext = xpNeed(sl);
   addSkill(ch.初期スキル);
   recalc();
   R.p.hp = R.p.maxHp;
@@ -180,6 +199,9 @@ function addSkill(id) { R.p.skills[id] = (R.p.skills[id] || 0) + 1; R.p.timers[i
 function recalc() {
   const p = R.p, ch = R.ch;
   const m = { power: 1, cd: 1, area: 1, speed: 1, regen: ch.回復, hpMul: 1, magnet: 1, xp: 1 };
+  const md = Meta.data;
+  m.speed += 0.05 * md.speed; m.power += 0.05 * md.power; m.area += 0.05 * md.area;
+  m.cd -= 0.03 * md.cd; m.xp += 0.1 * md.xp; m.magnet += 0.1 * md.magnet; m.regen += 0.2 * md.regen;
   for (const id in p.skills) {
     const d = SK[id];
     if (d.種別 === 'passive') m[d.stat] += d.per * p.skills[id];
@@ -251,6 +273,7 @@ function killEnemy(e) {
   dropOrb(e.x, e.y, e.def.経験値);
   if (e.def.ボス) {
     R.chests.push({ x: e.x, y: e.y });
+    R.bossKills++;
     if (e.def.最終) win();
   }
 }
@@ -421,7 +444,7 @@ function updateEnemies(dt) {
     }
     e.x += dx / d * sp * dt * dir; e.y += dy / d * sp * dt * dir;
     if (p.inv <= 0 && d < e.r + 10) {
-      const dmg = Math.max(1, e.def.攻撃 - R.ch.防御);
+      const dmg = Math.max(1, Math.round((e.def.攻撃 - R.ch.防御) * (1 - 0.03 * Meta.data.guard)));
       p.hp -= dmg; p.inv = 0.5; R.flash = 0.15;
       popup(p.x, p.y - 14, '-' + dmg, '#ff6666');
     }
@@ -430,13 +453,18 @@ function updateEnemies(dt) {
   for (const b of R.ebullets) {
     b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt;
     if (p.inv <= 0 && Math.hypot(p.x - b.x, p.y - b.y) < b.r + 10) {
-      const dmg = Math.max(1, b.dmg - R.ch.防御);
+      const dmg = Math.max(1, Math.round((b.dmg - R.ch.防御) * (1 - 0.03 * Meta.data.guard)));
       p.hp -= dmg; p.inv = 0.5; R.flash = 0.15; b.life = 0;
       popup(p.x, p.y - 14, '-' + dmg, '#ff6666');
     }
   }
   R.ebullets = R.ebullets.filter(b => b.life > 0);
-  if (p.hp <= 0) lose();
+  if (p.hp <= 0) {
+    if (R.revives > 0) {
+      R.revives--; p.hp = p.maxHp / 2; p.inv = 2; R.flash = 0.3;
+      toast('復活した！');
+    } else lose();
+  }
 }
 
 function updateOrbs(dt) {
@@ -489,9 +517,13 @@ function openChest() {
 function levelChoices() {
   const p = R.p, max = GAME_CONFIG.スキル最大レベル, full = Object.keys(p.skills).length >= GAME_CONFIG.スキル最大所持数;
   const pool = [];
-  for (const id in p.skills) if (!SK[id].evo && p.skills[id] < max) pool.push(id);
-  if (!full) for (const id in SK) if (!SK[id].evo && !p.skills[id]) pool.push(id);
-  pool.sort(() => Math.random() - 0.5);
+  for (const id in p.skills) if (!SK[id].evo && p.skills[id] < max && !R.blocked.has(id)) pool.push(id);
+  if (!full) for (const id in SK) if (!SK[id].evo && !p.skills[id] && !R.blocked.has(id)) pool.push(id);
+  const bias = 0.5 * Meta.data.rarity;
+  const key = id => Math.pow(Math.random(), 1 / (1 + (p.skills[id] ? bias * p.skills[id] : 0)));
+  const keys = {};
+  pool.forEach(id => { keys[id] = key(id); });
+  pool.sort((a, b) => keys[b] - keys[a]);
   const n = Meta.data.choices4 ? GAME_CONFIG.拡張選択肢数 : GAME_CONFIG.初期選択肢数;
   return pool.slice(0, n);
 }
@@ -522,11 +554,20 @@ function renderChoices(choices) {
     c.firstChild.textContent = cur ? `${d.名前}  Lv.${cur} → Lv.${cur + 1}` : `【新規】${d.名前}`;
     c.lastChild.textContent = cur ? `${d.説明}（${eff}）` : d.説明;
     c.onclick = () => { addSkill(id); recalc(); closeLevelUp(); };
+    if (R.blocks > 0) {
+      const bb = document.createElement('button');
+      bb.textContent = `ブロック（残り ${R.blocks}）`;
+      bb.onclick = ev => { ev.stopPropagation(); R.blocks--; R.blocked.add(id); renderChoices(levelChoices()); };
+      c.appendChild(bb);
+    }
     box.appendChild(c);
   });
   const rb = $('rerollBtn');
   rb.textContent = `リロール（残り ${R.rerolls} 回）`;
   rb.disabled = R.rerolls <= 0;
+  const sb = $('skipBtn');
+  sb.textContent = `スキップ（残り ${R.skips} 回）`;
+  sb.disabled = R.skips <= 0;
 }
 
 function closeLevelUp() {
@@ -542,6 +583,13 @@ $('rerollBtn').onclick = () => {
   renderChoices(levelChoices());
 };
 
+$('skipBtn').onclick = () => {
+  if (G.state !== 'levelup' || R.skips <= 0) return;
+  R.skips--; R.bonusPts += 10;
+  R.p.hp = Math.min(R.p.maxHp, R.p.hp + R.p.maxHp * 0.15);
+  closeLevelUp();
+};
+
 // ---------- 終了 ----------
 function win() {
   if (R.over) return;
@@ -553,7 +601,8 @@ function lose() { if (R.over) return; R.over = true; endRun(); }
 function endRun() {
   G.state = 'over';
   $('levelup').classList.remove('show');
-  const pts = R.kills + Math.floor(R.t / 10) * 5 + (R.won ? 300 : 0);
+  const base = R.kills + Math.floor(R.t / 10) * 5 + (R.won ? 300 : 0) + R.bonusPts + R.bossKills * 50 * Meta.data.bossBonus;
+  const pts = Math.round(base * (1 + 0.1 * Meta.data.pointMul));
   Meta.data.points += pts;
   let extra = '';
   if (R.won) {

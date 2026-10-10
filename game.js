@@ -765,6 +765,7 @@ $('newGameBtn').onclick = () => {
   if (hasSave() && !confirm('既存のセーブデータを消して初めから始めますか？')) return;
   try { localStorage.removeItem(GAME_CONFIG.メタ保存キー); } catch (e) { /* ignore */ }
   Meta.reset();
+  Meta.save();
   G.selChar = GAME_CONFIG.キャラクター[0].id;
   $('title').classList.remove('show');
   showMenu();

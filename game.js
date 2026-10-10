@@ -713,7 +713,7 @@ function dexHtml() {
   const evo = pts >= 10
     ? GAME_CONFIG.進化.map(ev => `${SK[ev.結果].名前}：${SK[ev.基本].名前}をMaxレベルに＋${SK[ev.必要].名前}を所持して宝箱を取得`).join('<br>')
     : `図鑑ptが10に達すると進化スキルの条件が見られる（あと ${10 - pts}pt）`;
-  return `<h3>敵図鑑 <small>図鑑pt ${pts} ／ 全${total}種</small></h3>
+  return `<h3 style="margin-top:0">図鑑ポイント <small>図鑑pt ${pts} ／ 全${total}種</small></h3>
     <div style="font-size:12px;text-align:left;margin-bottom:6px">${names}</div>
     <div style="font-size:13px;text-align:left;border:1px solid #5ab;border-radius:6px;padding:6px"><b>進化スキル条件</b><br>${evo}</div>`;
 }
@@ -739,7 +739,6 @@ function showMenu() {
   }).join('');
   $('menuPanel').innerHTML = `<h2>${GAME_CONFIG.タイトル}</h2>
     <p style="font-size:13px">移動：WASD / 矢印キー / 画面タッチドラッグ。スキルは自動攻撃。<br>${GAME_CONFIG.クリア時間分}分間生き延びて最終ボスを倒せ！</p>
-    ${dexHtml()}
     <h3>キャラクター選択</h3>${chars}
     <h3>強化ショップ <small>所持 ${md.points}pt ／ クリア ${md.clears}回 ／ 選択肢 ${md.choices4 ? 4 : 3}枠${md.choices4 ? '' : '（初回クリアで解放）'}</small></h3>${shop}
     <button id="startBtn" style="text-align:center;font-weight:bold;background:#1d7a4f">ゲーム開始</button>`;
@@ -748,7 +747,7 @@ function showMenu() {
 
 function showDex() {
   const dex = Meta.data.bestiary;
-  $('dexList').innerHTML = Object.keys(EN).map(k => {
+  $('dexList').innerHTML = dexHtml() + Object.keys(EN).map(k => {
     const known = dex.includes(k), e = EN[k];
     const img = `<img src="${makeSpriteCanvas(k, 4).toDataURL()}" width="64" height="64"${known ? '' : ' style="filter:brightness(0)"'}>`;
     if (!known) return `<div class="dexItem">${img}<div><div class="n">？？？</div><div class="x">まだ遭遇していない。</div></div></div>`;

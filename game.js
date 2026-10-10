@@ -342,7 +342,7 @@ function killEnemy(e) {
   }
 }
 
-const ITEM_DROP_RATE = 0.03; // 3%（3種は等確率）
+const ITEM_DROP_RATE = 0.005; // 0.5%（3種は等確率）
 const ITEM_NAMES = { heal: '若葉の雫', magnet: '磁石花', star: '金の根' };
 
 function dropOrb(x, y, v) {

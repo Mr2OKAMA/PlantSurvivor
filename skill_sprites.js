@@ -509,9 +509,137 @@ SKILL_SPRITES.spine = [
   '................',
 ];
 
+SKILL_SPRITES.cirri_evo = [
+  '**.....o......**',
+  '*...o.yo.y.o...*',
+  '....o.yo.yoo....',
+  '...y.oooooo.y...',
+  '.oo.yoyYyyoy.oo.',
+  '...ooYYYYYYoo...',
+  '.yyoyYwyyyYyoyy.',
+  '...oyYyYyyYyo...',
+  'ooooYYyyYyYyooo.',
+  '.yyoyYyyyyYyoyy.',
+  '..oooYYYYYYooo..',
+  '.oo.yoyyyyoy.oo.',
+  '...y.oooooo.y...',
+  '....ooy.oyoo....',
+  '*...o.y.oy.o...*',
+  '**............**',
+];
+SKILL_SPRITES.shell_evo = [
+  '**............**',
+  '*t............t*',
+  '..t..oooooo..t..',
+  '...tommNNmmot...',
+  '...omNNmmNNmo...',
+  '..omNwNNNNmNmo..',
+  '..omNNNNNNNNmo..',
+  '..oNmNNNNNNmNo..',
+  '..oNmNNNNNNmNo..',
+  '..omNNNNNNNNmo..',
+  '..omNmNNNNmNmo..',
+  '...omNNmmNNmo...',
+  '...tommNNmmot...',
+  '..t..oooooo..t..',
+  '*t............t*',
+  '**............**',
+];
+SKILL_SPRITES.tun_evo = [
+  '**....VVVV....**',
+  '*...VVvvvvVV...*',
+  '...Vvvv..vvvV...',
+  '..Vv...VV...vV..',
+  '.Vv..VVVVVV..vV.',
+  '.Vv.VVvvvvVV.vV.',
+  'Vvv.VvVVVVvV.vvV',
+  'Vv.VVvVwvVvVV.vV',
+  'Vv.VVvVvVVVVV.vV',
+  'Vvv.VvVVVVvV.vvV',
+  '.Vv.VVvvVvVV.vV.',
+  '.Vv..VVVVVV..vV.',
+  '..Vv...VV...vV..',
+  '...Vvvv..vvvV...',
+  '*...VVvvvvVV...*',
+  '**....VVVV....**',
+];
+SKILL_SPRITES.photo_evo = [
+  '**.....w......**',
+  '*......l.......*',
+  '.......l........',
+  '...w...l....w...',
+  '....l.oooo.l....',
+  '.....ollllo.....',
+  '....olwllllo....',
+  '....olllGllo....',
+  'wlllollGGllollll',
+  '....ollllllo....',
+  '.....ollllo.....',
+  '....l.oooo.l....',
+  '...w....l...w...',
+  '........l.......',
+  '*.......l......*',
+  '**......l.....**',
+];
+SKILL_SPRITES.spine_evo = [
+  '**.....o..r...**',
+  '*...r..r.r.....*',
+  '..o.rr.r.r..ro..',
+  '..rr.r.r.r.r....',
+  '...rroooooor.rr.',
+  'rr..oorrrroor...',
+  '..rrorerrrro...r',
+  '....orrrrrrorrr.',
+  'orrrorroorrorrro',
+  '...rorrrrrror...',
+  '..rroorrrroo.rr.',
+  '.r..roooooor....',
+  '...rr.r.rrr.rr..',
+  '..or.rr.r.r..o..',
+  '*....r..r.rr...*',
+  '**...r..o.....**',
+];
+SKILL_SPRITES.cilia_evo = [
+  '**............**',
+  '*...pppppppp...*',
+  '...p.......pp...',
+  '..p..rrrrrr..p..',
+  '.p..r......r.p..',
+  '.p.r.pppppp.r.p.',
+  '.p.r.p.oo.p.r.p.',
+  '.p.r.poweop.r.p.',
+  '.p.r.poeeop.r.p.',
+  '.p.r.p.oo.p.r.p.',
+  '.p.r.pppppp.r.p.',
+  '.p..r......r.p..',
+  '..p..rrrrrr..p..',
+  '...p.......pp...',
+  '*...pppppppp...*',
+  '**............**',
+];
+SKILL_SPRITES.sucker_evo = [
+  '**............**',
+  '*...........ooo*',
+  '...........owvoo',
+  '...........oovoo',
+  '.........Vovooo.',
+  '.........ovvow..',
+  '........Vvvw....',
+  '........ovo.....',
+  '......Vovow.....',
+  '....Vovvo.......',
+  '..Vovvvow.......',
+  '..ovvow.........',
+  '.ovvw...........',
+  '.ovo............',
+  '*.o............*',
+  '**............**',
+];
+
 // スキルアイコンをCanvasに描画して返す
 function makeSkillIcon(id, scale = 1) {
-  const rows = SKILL_SPRITES[id];
+  const evoFallback = !SKILL_SPRITES[id] && id.endsWith('_evo');
+  const rows = SKILL_SPRITES[id] || SKILL_SPRITES[id.replace(/_evo$/, '')];
   const cv = document.createElement('canvas');
   cv.width = 16 * scale; cv.height = 16 * scale;
   const ctx = cv.getContext('2d');
@@ -523,6 +651,12 @@ function makeSkillIcon(id, scale = 1) {
       ctx.fillRect(x * scale, y * scale, scale, scale);
     }
   });
+  if (evoFallback) {
+    // 専用ドットが無い進化スキルは基本スキルの絵に金色の枠を付ける
+    ctx.strokeStyle = '#ffd24a';
+    ctx.lineWidth = Math.max(1, scale);
+    ctx.strokeRect(scale / 2, scale / 2, 16 * scale - scale, 16 * scale - scale);
+  }
   return cv;
 }
 

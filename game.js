@@ -562,9 +562,15 @@ function updateEnemies(dt) {
     }
   }
   R.ebullets = R.ebullets.filter(b => b.life > 0);
-  if (p.hp <= 0) {
+  if (!(p.hp > 0)) {
     if (R.revives > 0) {
-      R.revives--; p.hp = p.maxHp / 2; p.inv = 2; R.flash = 0.3;
+      R.revives--; p.hp = Math.max(1, p.maxHp / 2); p.inv = 2; p.god = Math.max(p.god || 0, 2); R.flash = 0.3;
+      R.ebullets = [];
+      for (const e of R.enemies) {
+        const dx = e.x - p.x, dy = e.y - p.y, d = Math.hypot(dx, dy) || 1;
+        if (d < 200 && !e.def.ボス) { e.x = p.x + dx / d * 200; e.y = p.y + dy / d * 200; }
+      }
+      SFX.play('start', 0.1);
       toast('復活した！');
     } else lose();
   }
@@ -822,20 +828,33 @@ function showMenu() {
       <div class="t">${sprite}${c.名前} <small>（${c.タイプ}）</small></div>
       <div class="d">${c.説明}${c.特性名 ? '<br>特性：' + c.特性名 : ''}<br>HP ${c.HP} ／ 速度 ${c.速度} ／ 初期スキル：${SK[c.初期スキル].名前}</div></button>`;
   }).join('');
-  const shop = GAME_CONFIG.ショップ.map(s => {
-    const n = md[s.id], maxed = n >= s.最大, cost = s.価格(n);
-    return `<button class="shop" data-id="${s.id}" ${maxed || md.points < cost ? 'disabled' : ''}>
-      <div class="t">${s.名前} <small>(${n}/${s.最大}) ${maxed ? '最大' : cost + 'pt'}</small></div><div class="d">${s.説明}</div></button>`;
-  }).join('');
   $('menuPanel').innerHTML = `<h2>${GAME_CONFIG.タイトル}</h2>
     <p style="font-size:13px">移動：WASD / 矢印キー / 画面タッチドラッグ。スキルは自動攻撃。<br>${GAME_CONFIG.クリア時間分}分間生き延びて最終ボスを倒せ！</p>
     <h3>キャラクター選択</h3>${chars}
     <h3>契約カード <small>${md.contracts.length}/${Object.keys(CT).length}</small></h3>
     <div style="font-size:12px;text-align:left;margin-bottom:6px">${md.contracts.length ? md.contracts.filter(id => CT[id]).map(id => CT[id].名前).join(' ／ ') : 'なし（キャラクターでステージクリアすると契約カードを獲得。ラン開始時にランダムで選べる）'}</div>
-    <h3>強化ショップ <small>所持 ${md.points}pt ／ クリア ${md.clears}回 ／ 選択肢 ${md.choices4 ? 4 : 3}枠${md.choices4 ? '' : '（初回クリアで解放）'}</small></h3>${shop}
     <button id="startBtn" style="text-align:center;font-weight:bold;background:#1d7a4f">ゲーム開始</button>`;
   $('menu').classList.add('show');
 }
+
+function showShop() {
+  const md = Meta.data;
+  const shop = GAME_CONFIG.ショップ.map(s => {
+    const n = md[s.id], maxed = n >= s.最大, cost = s.価格(n);
+    return `<button class="shop" data-id="${s.id}" ${maxed || md.points < cost ? 'disabled' : ''}>
+      <div class="t">${s.名前} <small>(${n}/${s.最大}) ${maxed ? '最大' : cost + 'pt'}</small></div><div class="d">${s.説明}</div></button>`;
+  }).join('');
+  $('shopList').innerHTML = `<h3><small>所持 ${md.points}pt ／ クリア ${md.clears}回 ／ 選択肢 ${md.choices4 ? 4 : 3}枠${md.choices4 ? '' : '（初回クリアで解放）'}</small></h3>${shop}`;
+  $('shop').classList.add('show');
+}
+$('shopBtn').onclick = showShop;
+$('shopClose').onclick = () => $('shop').classList.remove('show');
+$('shopList').addEventListener('click', ev => {
+  const b = ev.target.closest('button');
+  if (!b || b.disabled || !b.classList.contains('shop')) return;
+  const s = GAME_CONFIG.ショップ.find(x => x.id === b.dataset.id), md = Meta.data, cost = s.価格(md[s.id]);
+  if (md.points >= cost && md[s.id] < s.最大) { md.points -= cost; md[s.id]++; Meta.save(); showShop(); }
+});
 
 function showDex() {
   const dex = Meta.data.bestiary;
@@ -863,10 +882,7 @@ $('menuPanel').addEventListener('click', ev => {
     }
     G.selChar = c.id; showMenu();
   }
-  else if (b.classList.contains('shop')) {
-    const s = GAME_CONFIG.ショップ.find(x => x.id === b.dataset.id), md = Meta.data, cost = s.価格(md[s.id]);
-    if (md.points >= cost && md[s.id] < s.最大) { md.points -= cost; md[s.id]++; Meta.save(); showMenu(); }
-  } else if (b.id === 'startBtn') offerContracts();
+  else if (b.id === 'startBtn') offerContracts();
 });
 
 function offerContracts() {
@@ -895,6 +911,7 @@ function offerContracts() {
 function startGame(contract) {
   newRun(contract);
   $('menu').classList.remove('show');
+  $('shop').classList.remove('show');
   $('dex').classList.remove('show');
   $('levelup').classList.remove('show');
   $('result').classList.remove('show');

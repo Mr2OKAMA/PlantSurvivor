@@ -48,10 +48,10 @@ const GAME_CONFIG = {
     magnet:   { 名前: '磁気ピックアップ', 種別: 'passive', 説明: 'エネルギーの吸引範囲が広がる。', stat: 'magnet', per: 0.3, 効果文: '吸引範囲 +30%' },
     enzyme:   { 名前: '酵素剤', 種別: 'passive', 説明: '獲得経験値が増える。', stat: 'xp', per: 0.10, 効果文: '経験値 +10%' },
     // 進化スキル (レベル固定)
-    blower_evo:   { 名前: '超高圧エアジェット', 種別: 'burst', evo: true, 説明: '貫通する高圧空気を全方位へ放つ。', dmg: 16, cd: 1.6, count: 16, speed: 340, r: 10, pierce: 4, life: 1.4, color: 0xffffff },
+    blower_evo:   { 名前: '超高圧エアジェット', 種別: 'burst', evo: true, 説明: '最も近い敵を追尾する高圧空気を超高速で連射する。', homing: true, dmg: 16, cd: 0.12, count: 1, speed: 340, r: 10, pierce: 4, life: 1.4, color: 0xffffff },
     tentacle_evo: { 名前: '双頭バネ触手', 種別: 'proj', evo: true, 説明: '貫通する触手ビームを連射する。', dmg: 16, cd: 0.7, count: 4, speed: 520, r: 9, pierce: 3, life: 1.4, color: 0xffb0ff },
-    hypo_evo:     { 名前: '次亜塩素酸ミスト', 種別: 'aura', evo: true, 説明: '広範囲に強力な消毒ミストを噴霧する。', dmg: 8, cd: 0.4, count: 1, area: 150, color: 0xd9ff8a },
-    filter_evo:   { 名前: '高性能メンブレン', 種別: 'orbit', evo: true, 説明: '多数のメンブレンが高速で周回する。', dmg: 12, cd: 0, count: 6, area: 110, rot: 4, r: 14, color: 0xfff2a0 },
+    hypo_evo:     { 名前: '次亜塩素酸ミスト', 種別: 'aura', evo: true, 説明: '広範囲に強力な消毒ミストを噴霧する。', dmg: 8, cd: 0.4 / 3, count: 1, area: 150, color: 0xd9ff8a },
+    filter_evo:   { 名前: '高性能メンブレン', 種別: 'orbit', evo: true, 説明: '多数のメンブレンが高速で周回する。', dmg: 12, cd: 0, count: 6, area: 110, rot: 20, r: 14, color: 0xfff2a0 },
     uv_evo:       { 名前: '殺菌ランプ群', 種別: 'lightning', evo: true, 説明: '大量の紫外線で敵を焼き払う。', dmg: 22, cd: 1.0, count: 6, range: 520, color: 0xff9bf0 },
   },
 
@@ -298,7 +298,7 @@ function nearestEnemies(n, range) {
 function shoot(d, s, ang) {
   R.bullets.push({
     x: R.p.x, y: R.p.y, vx: Math.cos(ang) * d.speed, vy: Math.sin(ang) * d.speed,
-    dmg: s.dmg, r: d.r * (d.種別 === 'proj' ? s.area : 1), life: d.life, pierce: d.pierce, color: d.color, hit: new Set(),
+    dmg: s.dmg, r: d.r * (d.種別 === 'proj' ? s.area : 1), life: d.life, pierce: d.pierce, color: d.color, hit: new Set(), homing: !!d.homing, speed: d.speed,
   });
 }
 
@@ -316,6 +316,12 @@ function fireSkill(id) {
       return true;
     }
     case 'burst': {
+      if (d.homing) {
+        const t = nearestEnemies(1, 700)[0];
+        if (!t) return false;
+        shoot(d, s, Math.atan2(t.y - p.y, t.x - p.x));
+        return true;
+      }
       const off = Math.random() * 6.28;
       for (let i = 0; i < s.count; i++) shoot(d, s, off + (i / s.count) * Math.PI * 2);
       return true;
@@ -386,6 +392,22 @@ function updateSkills(dt) {
 
 function updateProjectiles(dt) {
   for (const b of R.bullets) {
+    if (b.homing) {
+      let t = null, td = Infinity;
+      for (const e of R.enemies) {
+        if (e.dead || b.hit.has(e.id)) continue;
+        const dd = Math.hypot(e.x - b.x, e.y - b.y);
+        if (dd < td) { td = dd; t = e; }
+      }
+      if (t) {
+        const want = Math.atan2(t.y - b.y, t.x - b.x), cur = Math.atan2(b.vy, b.vx);
+        let diff = want - cur;
+        while (diff > Math.PI) diff -= Math.PI * 2;
+        while (diff < -Math.PI) diff += Math.PI * 2;
+        const na = cur + Math.max(-12 * dt, Math.min(12 * dt, diff));
+        b.vx = Math.cos(na) * b.speed; b.vy = Math.sin(na) * b.speed;
+      }
+    }
     b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt;
     for (const e of R.enemies) {
       if (e.dead || b.hit.has(e.id)) continue;

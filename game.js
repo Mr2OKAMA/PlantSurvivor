@@ -270,6 +270,7 @@ function updateSpawns(dt) {
     if (min >= b.分 && !R.bossDone[i]) {
       R.bossDone[i] = true;
       spawnEnemy(b.敵, 1);
+      SFX.play('boss');
       toast(`警告！ ${EN[b.敵].名前} が出現！`);
     }
   });
@@ -284,6 +285,7 @@ function hurt(e, dmg) {
 
 function killEnemy(e) {
   e.dead = true; R.kills++;
+  SFX.play(e.def.ボス ? 'bossKill' : 'kill', 0.04);
   if (!Meta.data.bestiary.includes(e.key)) {
     Meta.data.bestiary.push(e.key); Meta.save();
     toast(`図鑑登録：${e.def.名前} (+1図鑑pt)`);
@@ -486,7 +488,7 @@ function updateEnemies(dt) {
     e.x += dx / d * sp * dt * dir; e.y += dy / d * sp * dt * dir;
     if (p.inv <= 0 && d < e.r + 10) {
       const dmg = Math.max(1, Math.round((e.def.攻撃 - R.ch.防御) * (1 - 0.03 * Meta.data.guard)));
-      p.hp -= dmg; p.inv = 0.5; R.flash = 0.15;
+      p.hp -= dmg; p.inv = 0.5; R.flash = 0.15; SFX.play('hurt', 0.1);
       popup(p.x, p.y - 14, '-' + dmg, '#ff6666');
       thorns();
     }
@@ -496,7 +498,7 @@ function updateEnemies(dt) {
     b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt;
     if (p.inv <= 0 && Math.hypot(p.x - b.x, p.y - b.y) < b.r + 10) {
       const dmg = Math.max(1, Math.round((b.dmg - R.ch.防御) * (1 - 0.03 * Meta.data.guard)));
-      p.hp -= dmg; p.inv = 0.5; R.flash = 0.15; b.life = 0;
+      p.hp -= dmg; p.inv = 0.5; R.flash = 0.15; b.life = 0; SFX.play('hurt', 0.1);
       popup(p.x, p.y - 14, '-' + dmg, '#ff6666');
       thorns();
     }
@@ -516,7 +518,7 @@ function updateOrbs(dt) {
     const d = Math.hypot(p.x - o.x, p.y - o.y);
     if (d < mr) o.mag = true;
     if (o.mag) { o.x += (p.x - o.x) / d * 420 * dt; o.y += (p.y - o.y) / d * 420 * dt; }
-    if (d < 14) { o.got = true; gainXp(o.v * p.mods.xp); }
+    if (d < 14) { o.got = true; SFX.play('xp', 0.05); gainXp(o.v * p.mods.xp); }
   }
   R.orbs = R.orbs.filter(o => !o.got);
   for (const c of R.chests) if (Math.hypot(p.x - c.x, p.y - c.y) < 24) { c.got = true; openChest(); }
@@ -573,6 +575,7 @@ function levelChoices() {
 
 function showLevelUp() {
   G.state = 'levelup';
+  SFX.play('levelup');
   const choices = levelChoices();
   if (!choices.length && R.autoHeal) {
     R.p.hp = Math.min(R.p.maxHp, R.p.hp + R.p.maxHp * 0.3);
@@ -642,10 +645,10 @@ $('skipBtn').onclick = () => {
 // ---------- 終了 ----------
 function win() {
   if (R.over) return;
-  R.over = true; R.won = true;
+  R.over = true; R.won = true; SFX.bgm(null); SFX.play('win');
   setTimeout(endRun, 600);
 }
-function lose() { if (R.over) return; R.over = true; endRun(); }
+function lose() { if (R.over) return; R.over = true; SFX.bgm(null); SFX.play('lose'); endRun(); }
 
 function endRun() {
   G.state = 'over';
@@ -683,6 +686,7 @@ function dexHtml() {
 
 function showMenu() {
   G.state = 'menu';
+  SFX.bgm('menu');
   const md = Meta.data;
   const chars = GAME_CONFIG.キャラクター.map(c => {
     const locked = isLocked(c);
@@ -731,6 +735,7 @@ function startGame() {
   $('levelup').classList.remove('show');
   $('result').classList.remove('show');
   G.state = 'play';
+  SFX.play('start'); SFX.bgm('run');
   popups.forEach(q => { q.t = 0; q.obj.setVisible(false); });
 }
 

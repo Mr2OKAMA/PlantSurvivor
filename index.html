@@ -28,6 +28,12 @@
   .dexItem { display: flex; gap: 10px; align-items: center; text-align: left; border: 1px solid #5ab; border-radius: 8px; padding: 8px; margin: 6px 0; }
   .dexItem img { image-rendering: pixelated; flex: none; }
   .dexItem .n { font-weight: bold; } .dexItem .s { font-size: 12px; opacity: .8; } .dexItem .x { font-size: 13px; }
+  #title { z-index: 20; background: #04121c; }
+  #titleBg { position: absolute; inset: 0; }
+  #titleBg canvas { width: 100%; height: 100%; image-rendering: pixelated; object-fit: cover; }
+  #titleBox { position: relative; width: min(320px, 80%); text-align: center; }
+  #titleBox h1 { font-size: 34px; margin: 0 0 28px; color: #e8fff8; text-shadow: 3px 3px 0 #0a3a52, 0 0 12px #5fd; }
+  #titleBox button { text-align: center; font-weight: bold; font-size: 18px; background: rgba(20,66,92,.9); }
 </style>
 </head>
 <body>
@@ -40,15 +46,21 @@
 </div>
 <div id="joy"><div></div></div>
 
-<div class="overlay show" id="menu"><button id="dexBtn" title="図鑑">📖</button><div class="panel" id="menuPanel"></div></div>
+<div class="overlay show" id="title">
+  <div id="titleBg"></div>
+  <div id="titleBox"><h1 id="titleName"></h1><button id="newGameBtn">ニューゲーム</button><button id="continueBtn">つづきから</button></div>
+</div>
+<div class="overlay" id="menu"><button id="dexBtn" title="図鑑">📖</button><div class="panel" id="menuPanel"></div></div>
 <div class="overlay" id="dex"><div class="panel"><h2>敵図鑑</h2><div id="dexList"></div><button id="dexClose" style="text-align:center">閉じる</button></div></div>
 <div class="overlay" id="levelup"><div class="panel"><h2 id="luTitle">レベルアップ！</h2><div id="luCards"></div><div class="row"><button id="rerollBtn"></button><button id="skipBtn"></button></div></div></div>
+<div class="overlay" id="contract"><div class="panel"><h2>契約を選ぶ</h2><div id="ctCards"></div></div></div>
 <div class="overlay" id="result"><div class="panel" id="resultPanel"></div></div>
 
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
 <script src="sprites.js"></script>
 <script src="skill_sprites.js"></script>
 <script src="enemy_sprites.js"></script>
+<script src="title_sprites.js"></script>
 <script src="audio.js"></script>
 <script src="game.js"></script>
 </body>

@@ -16,23 +16,36 @@ const GAME_CONFIG = {
   // ---------- A. プレイアブルキャラクター ----------
   キャラクター: [
     { id: 'tsurigane', 名前: 'ツリガネムシ', タイプ: 'バランス・吸入型', 説明: '吸入で素早くエネルギーを集める。バランス型。',
-      HP: 100, 速度: 120, 防御: 0, 回復: 0, 吸引: 1.5, 色: 0xbfe9ff, 初期スキル: 'tentacle' },
+      HP: 100, 速度: 120, 防御: 0, 回復: 0, 吸引: 1.5, 色: 0xbfe9ff, 初期スキル: 'tentacle', 契約報酬: 'speed' },
     { id: 'aspidisca', 名前: 'アスピディスカ', タイプ: '高速・近接型', 説明: '足の速さが武器。敵の懐で戦う。',
-      HP: 80, 速度: 165, 防御: 0, 回復: 0, 吸引: 1.0, 色: 0xffd27a, 初期スキル: 'cirri' },
+      HP: 80, 速度: 165, 防御: 0, 回復: 0, 吸引: 1.0, 色: 0xffd27a, 初期スキル: 'cirri', 契約報酬: 'fury' },
     { id: 'arcella', 名前: 'アルセラ', タイプ: '高耐久・シールド型', 説明: '殻で身を守る。周囲を回るろ過フィルターで防ぐ。',
-      HP: 130, 速度: 105, 防御: 2, 回復: 0, 吸引: 1.0, 色: 0xd9a066, 初期スキル: 'shell' },
+      HP: 130, 速度: 105, 防御: 2, 回復: 0, 吸引: 1.0, 色: 0xd9a066, 初期スキル: 'shell', 契約報酬: 'swarm' },
     { id: 'kumamushi', 名前: 'クマムシ', タイプ: '超高耐久・低速型', 説明: '極限環境に耐える。遅いが倒れにくい。',
-      HP: 220, 速度: 85, 防御: 3, 回復: 0.3, 吸引: 1.0, 色: 0xb8a7e8, 初期スキル: 'tun' },
+      HP: 220, 速度: 85, 防御: 3, 回復: 0.3, 吸引: 1.0, 色: 0xb8a7e8, 初期スキル: 'tun', 契約報酬: 'tough' },
     { id: 'midorimushi', 名前: 'ミドリムシ', タイプ: '自動回復・光合成型', 説明: '光合成でHPが自動回復する。',
-      HP: 90, 速度: 115, 防御: 0, 回復: 1.2, 吸引: 1.0, 色: 0x6dff8a, 初期スキル: 'photo' },
+      HP: 90, 速度: 115, 防御: 0, 回復: 1.2, 吸引: 1.0, 色: 0x6dff8a, 初期スキル: 'photo', 契約報酬: 'symbiosis' },
     // ---- ショップで開放するキャラクター（解放価格: 処理ポイント）----
     { id: 'rotaria', 名前: 'ロタリア', タイプ: '回転・周回特化型', 説明: '繊毛の輪を回転させて戦う。周回スキルの数が+1される。',
-      HP: 95, 速度: 110, 防御: 1, 回復: 0, 吸引: 1.2, 色: 0xff9ec4, 初期スキル: 'cilia', 特性: 'orbit', 特性名: '輪盤回転：周回スキルの数+1', 解放価格: 500 },
+      HP: 95, 速度: 110, 防御: 1, 回復: 0, 吸引: 1.2, 色: 0xff9ec4, 初期スキル: 'cilia', 特性: 'orbit', 特性名: '輪盤回転：周回スキルの数+1', 解放価格: 500, 契約報酬: 'whirl' },
     { id: 'euprotes', 名前: 'ユープロテス', タイプ: '反撃・重装型', 説明: '硬い殻と棘状の繊毛を持つ。被弾すると衝撃波で反撃する。',
-      HP: 140, 速度: 100, 防御: 2, 回復: 0, 吸引: 1.0, 色: 0xff7a5c, 初期スキル: 'spine', 特性: 'thorns', 特性名: '棘の反撃：被弾時に衝撃波', 解放価格: 800 },
+      HP: 140, 速度: 100, 防御: 2, 回復: 0, 吸引: 1.0, 色: 0xff7a5c, 初期スキル: 'spine', 特性: 'thorns', 特性名: '棘の反撃：被弾時に衝撃波', 解放価格: 800, 契約報酬: 'thorn' },
     { id: 'tokophilia', 名前: 'トコフィリア', タイプ: '吸収・回復型', 説明: '吸盤触手で獲物を捕らえる。敵を倒すとHPを吸収する。',
-      HP: 110, 速度: 105, 防御: 0, 回復: 0, 吸引: 1.8, 色: 0xc77dff, 初期スキル: 'sucker', 特性: 'drain', 特性名: '吸盤捕食：撃破でHP+0.6', 解放価格: 1200 },
+      HP: 110, 速度: 105, 防御: 0, 回復: 0, 吸引: 1.8, 色: 0xc77dff, 初期スキル: 'sucker', 特性: 'drain', 特性名: '吸盤捕食：撃破でHP+0.6', 解放価格: 1200, 契約報酬: 'predator' },
   ],
+
+  // ---------- A2. 契約 (キャラのステージクリア報酬。ラン開始時にランダムで提示される) ----------
+  // 倍率: speed=ゲーム速度 atk=敵攻撃力 xp=取得経験値 spawn=敵出現率(ボス除く) hp=敵HP(ボス除く) choices=レベルアップ選択肢数
+  契約: {
+    speed:     { 名前: '加速の契約', 説明: 'ランを2倍速でプレイする。', speed: 2 },
+    fury:      { 名前: '激昂の契約', 説明: '敵の攻撃力が2倍になるが、取得経験値も2倍。', atk: 2, xp: 2 },
+    swarm:     { 名前: '繁殖の契約', 説明: '敵の出現率が2倍（ボスは対象外）。取得経験値も2倍。', spawn: 2, xp: 2 },
+    tough:     { 名前: '頑強の契約', 説明: '敵のHPが2倍（ボスは対象外）。レベルアップ時のスキル選択肢が2倍。', hp: 2, choices: 2 },
+    symbiosis: { 名前: '共生の契約', 説明: '敵の攻撃力が2倍。レベルアップ時のスキル選択肢が2倍。', atk: 2, choices: 2 },
+    whirl:     { 名前: '渦潮の契約', 説明: '2倍速で進行し、敵の出現率も2倍（ボスは対象外）。', speed: 2, spawn: 2 },
+    thorn:     { 名前: '棘の契約', 説明: '敵の攻撃力とHPが2倍（ボスのHPは対象外）。取得経験値は4倍。', atk: 2, hp: 2, xp: 4 },
+    predator:  { 名前: '捕食の契約', 説明: '敵のHPと出現率が2倍（ボスは対象外）。スキル選択肢が2倍。', hp: 2, spawn: 2, choices: 2 },
+  },
 
   // ---------- B. スキル ----------
   // 分類: '微生物'(固有スキル。初期スキル専用) / '施設'(レベルアップで習得)
@@ -168,7 +181,11 @@ const GAME_CONFIG = {
 // ============================================================
 const Meta = {
   data: { points: 0, clears: 0, choices4: false, reroll: 0, hp: 0, speed: 0, power: 0, area: 0, cd: 0, xp: 0, magnet: 0, regen: 0, guard: 0,
-    startLv: 0, revive: 0, skip: 0, block: 0, pointMul: 0, rarity: 0, bossBonus: 0, unlocked: [], bestiary: [] },
+    startLv: 0, revive: 0, skip: 0, block: 0, pointMul: 0, rarity: 0, bossBonus: 0, unlocked: [], bestiary: [], contracts: [] },
+  reset() {
+    this.data = { points: 0, clears: 0, choices4: false, reroll: 0, hp: 0, speed: 0, power: 0, area: 0, cd: 0, xp: 0, magnet: 0, regen: 0, guard: 0,
+      startLv: 0, revive: 0, skip: 0, block: 0, pointMul: 0, rarity: 0, bossBonus: 0, unlocked: [], bestiary: [], contracts: [] };
+  },
   load() {
     try {
       const s = localStorage.getItem(GAME_CONFIG.メタ保存キー);
@@ -190,6 +207,7 @@ const pick = arr => arr[Math.floor(Math.random() * arr.length)];
 const fmtTime = s => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 const SK = GAME_CONFIG.スキル;
 const EN = GAME_CONFIG.敵;
+const CT = GAME_CONFIG.契約;
 
 // ============================================================
 // ゲーム本体
@@ -203,11 +221,12 @@ const G = {
 };
 let R = null; // 1プレイ分の状態
 
-function newRun() {
+function newRun(contract) {
   const ch = GAME_CONFIG.キャラクター.find(c => c.id === G.selChar);
   const maxHp = Math.round(ch.HP * (1 + 0.1 * Meta.data.hp));
   R = {
-    ch, t: 0, kills: 0, over: false, won: false,
+    ch, contract: contract || null, con: Object.assign({ speed: 1, atk: 1, xp: 1, spawn: 1, hp: 1, choices: 1 }, contract ? CT[contract] : {}),
+    t: 0, kills: 0, over: false, won: false,
     p: { x: 0, y: 0, hp: maxHp, maxHp, inv: 0, lv: 1, xp: 0, xpNext: xpNeed(1), skills: {}, timers: {}, mods: null, face: 0 },
     enemies: [], bullets: [], ebullets: [], orbs: [], chests: [], zones: [], fx: [], novas: [],
     waveT: GAME_CONFIG.ウェーブ.map(() => 0), bossDone: {}, nextId: 1,
@@ -264,7 +283,9 @@ function toast(msg) { R.toast = msg; R.toastT = 3; }
 
 // ---------- 敵 ----------
 function spawnEnemy(id, hpMul) {
-  const d = EN[id], W = G.scene.scale.width, H = G.scene.scale.height;
+  const d = EN[id];
+  if (!d.ボス) hpMul *= R.con.hp;
+  const W = G.scene.scale.width, H = G.scene.scale.height;
   const rad = Math.max(W, H) / 2 + 60, a = Math.random() * Math.PI * 2;
   R.enemies.push({
     id: R.nextId++, def: d, key: id, x: R.p.x + Math.cos(a) * rad, y: R.p.y + Math.sin(a) * rad,
@@ -282,7 +303,7 @@ function updateSpawns(dt) {
       R.waveT[i] = w.間隔;
       const mult = 1 + min * 0.1, hpMul = 1 + min * 0.15;
       w.出現.forEach(g => {
-        const n = Math.round(g.数 * mult);
+        const n = Math.round(g.数 * mult * R.con.spawn);
         for (let k = 0; k < n; k++) spawnEnemy(g.敵, hpMul);
       });
     });
@@ -513,14 +534,14 @@ function updateEnemies(dt) {
       e.shot = (e.shot ?? rnd(0, 2.5)) - dt;
       if (e.shot <= 0 && d < 520) {
         e.shot = 2.5;
-        R.ebullets.push({ x: e.x, y: e.y, vx: dx / d * 220, vy: dy / d * 220, dmg: e.def.攻撃, r: 5, life: 4 });
+        R.ebullets.push({ x: e.x, y: e.y, vx: dx / d * 220, vy: dy / d * 220, dmg: e.def.攻撃 * R.con.atk, r: 5, life: 4 });
       }
     } else if (beh === 'flee') {
       dir = d < 230 ? -1 : (d > 330 ? 1 : 0);
     }
     e.x += dx / d * sp * dt * dir; e.y += dy / d * sp * dt * dir;
     if (p.inv <= 0 && d < e.r + 10) {
-      const dmg = Math.max(1, Math.round((e.def.攻撃 - R.ch.防御) * (1 - 0.03 * Meta.data.guard)));
+      const dmg = Math.max(1, Math.round((e.def.攻撃 * R.con.atk - R.ch.防御) * (1 - 0.03 * Meta.data.guard)));
       p.hp -= dmg; p.inv = 0.5; R.flash = 0.15; SFX.play('hurt', 0.1);
       popup(p.x, p.y - 14, '-' + dmg, '#ff6666');
       thorns();
@@ -551,7 +572,7 @@ function updateOrbs(dt) {
     const d = Math.hypot(p.x - o.x, p.y - o.y);
     if (d < mr) o.mag = true;
     if (o.mag) { o.x += (p.x - o.x) / d * 420 * dt; o.y += (p.y - o.y) / d * 420 * dt; }
-    if (d < 14) { o.got = true; SFX.play('xp', 0.05); gainXp(o.v * p.mods.xp); }
+    if (d < 14) { o.got = true; SFX.play('xp', 0.05); gainXp(o.v * p.mods.xp * R.con.xp); }
   }
   R.orbs = R.orbs.filter(o => !o.got);
   for (const c of R.chests) if (Math.hypot(p.x - c.x, p.y - c.y) < 24) { c.got = true; openChest(); }
@@ -603,7 +624,7 @@ function levelChoices() {
   pool.forEach(id => { keys[id] = key(id); });
   pool.sort((a, b) => keys[b] - keys[a]);
   const n = Meta.data.choices4 ? GAME_CONFIG.拡張選択肢数 : GAME_CONFIG.初期選択肢数;
-  return pool.slice(0, n);
+  return pool.slice(0, n * R.con.choices);
 }
 
 function showLevelUp() {
@@ -694,6 +715,11 @@ function endRun() {
   if (R.won) {
     Meta.data.clears++;
     if (!Meta.data.choices4) { Meta.data.choices4 = true; extra = '<p style="color:#fd4">クリア報酬：レベルアップ選択肢が4枠に拡張された！</p>'; }
+    const rw = R.ch.契約報酬;
+    if (rw && !Meta.data.contracts.includes(rw)) {
+      Meta.data.contracts.push(rw);
+      extra += `<p style="color:#fd4">キャラクター報酬：契約カード「${CT[rw].名前}」を獲得！<br><small>${CT[rw].説明}</small></p>`;
+    }
   }
   Meta.save();
   $('resultPanel').innerHTML = `<h2>${R.won ? 'ステージクリア！' : '力尽きた…'}</h2>
@@ -718,6 +744,40 @@ function dexHtml() {
     <div style="font-size:13px;text-align:left;border:1px solid #5ab;border-radius:6px;padding:6px"><b>進化スキル条件</b><br>${evo}</div>`;
 }
 
+function hasSave() {
+  try { return !!localStorage.getItem(GAME_CONFIG.メタ保存キー); } catch (e) { return false; }
+}
+
+function showTitle() {
+  G.state = 'title';
+  $('menu').classList.remove('show');
+  if (!$('titleBg').firstChild) {
+    const cv = makeTitleBackground();
+    cv.id = 'titleCanvas';
+    $('titleBg').appendChild(cv);
+  }
+  $('titleName').textContent = GAME_CONFIG.タイトル;
+  $('continueBtn').disabled = !hasSave();
+  $('title').classList.add('show');
+}
+
+$('newGameBtn').onclick = () => {
+  if (hasSave() && !confirm('既存のセーブデータを消して初めから始めますか？')) return;
+  try { localStorage.removeItem(GAME_CONFIG.メタ保存キー); } catch (e) { /* ignore */ }
+  Meta.reset();
+  G.selChar = GAME_CONFIG.キャラクター[0].id;
+  $('title').classList.remove('show');
+  showMenu();
+};
+$('continueBtn').onclick = () => {
+  if (!hasSave()) return;
+  Meta.reset();
+  Meta.load();
+  if (isLocked(GAME_CONFIG.キャラクター.find(c => c.id === G.selChar))) G.selChar = GAME_CONFIG.キャラクター[0].id;
+  $('title').classList.remove('show');
+  showMenu();
+};
+
 function showMenu() {
   G.state = 'menu';
   SFX.bgm('menu');
@@ -740,6 +800,8 @@ function showMenu() {
   $('menuPanel').innerHTML = `<h2>${GAME_CONFIG.タイトル}</h2>
     <p style="font-size:13px">移動：WASD / 矢印キー / 画面タッチドラッグ。スキルは自動攻撃。<br>${GAME_CONFIG.クリア時間分}分間生き延びて最終ボスを倒せ！</p>
     <h3>キャラクター選択</h3>${chars}
+    <h3>契約カード <small>${md.contracts.length}/${Object.keys(CT).length}</small></h3>
+    <div style="font-size:12px;text-align:left;margin-bottom:6px">${md.contracts.length ? md.contracts.filter(id => CT[id]).map(id => CT[id].名前).join(' ／ ') : 'なし（キャラクターでステージクリアすると契約カードを獲得。ラン開始時にランダムで選べる）'}</div>
     <h3>強化ショップ <small>所持 ${md.points}pt ／ クリア ${md.clears}回 ／ 選択肢 ${md.choices4 ? 4 : 3}枠${md.choices4 ? '' : '（初回クリアで解放）'}</small></h3>${shop}
     <button id="startBtn" style="text-align:center;font-weight:bold;background:#1d7a4f">ゲーム開始</button>`;
   $('menu').classList.add('show');
@@ -773,11 +835,34 @@ $('menuPanel').addEventListener('click', ev => {
   else if (b.classList.contains('shop')) {
     const s = GAME_CONFIG.ショップ.find(x => x.id === b.dataset.id), md = Meta.data, cost = s.価格(md[s.id]);
     if (md.points >= cost && md[s.id] < s.最大) { md.points -= cost; md[s.id]++; Meta.save(); showMenu(); }
-  } else if (b.id === 'startBtn') startGame();
+  } else if (b.id === 'startBtn') offerContracts();
 });
 
-function startGame() {
-  newRun();
+function offerContracts() {
+  const owned = Meta.data.contracts.filter(id => CT[id]);
+  if (!owned.length) { startGame(null); return; }
+  const offers = owned.map(id => [Math.random(), id]).sort((a, b) => a[0] - b[0]).slice(0, 3).map(x => x[1]);
+  const box = $('ctCards');
+  box.innerHTML = '';
+  offers.forEach(id => {
+    const c = document.createElement('div');
+    c.className = 'card';
+    c.innerHTML = '<div class="t"></div><div class="d"></div>';
+    c.firstChild.textContent = '📜 ' + CT[id].名前;
+    c.lastChild.textContent = CT[id].説明;
+    c.onclick = () => { $('contract').classList.remove('show'); startGame(id); };
+    box.appendChild(c);
+  });
+  const none = document.createElement('div');
+  none.className = 'card';
+  none.innerHTML = '<div class="t">契約しない</div><div class="d">通常のルールで開始する。</div>';
+  none.onclick = () => { $('contract').classList.remove('show'); startGame(null); };
+  box.appendChild(none);
+  $('contract').classList.add('show');
+}
+
+function startGame(contract) {
+  newRun(contract);
   $('menu').classList.remove('show');
   $('dex').classList.remove('show');
   $('levelup').classList.remove('show');
@@ -846,7 +931,7 @@ function updateHud(dt) {
   R.hudT = 0.1;
   $('hpbar').firstElementChild.style.width = Math.max(0, p.hp / p.maxHp * 100) + '%';
   $('xpbar').firstElementChild.style.width = (p.xp / p.xpNext * 100) + '%';
-  $('info').textContent = `${fmtTime(R.t)} / ${GAME_CONFIG.クリア時間分}:00　Lv.${p.lv}　HP ${Math.ceil(p.hp)}/${p.maxHp}　撃破 ${R.kills}` + (R.toastT > 0 ? '　◆' + R.toast : '');
+  $('info').textContent = (R.contract ? `[${CT[R.contract].名前}] ` : '') + `${fmtTime(R.t)} / ${GAME_CONFIG.クリア時間分}:00　Lv.${p.lv}　HP ${Math.ceil(p.hp)}/${p.maxHp}　撃破 ${R.kills}` + (R.toastT > 0 ? '　◆' + R.toast : '');
   const sig = Object.keys(p.skills).map(id => id + ':' + p.skills[id]).join(',');
   if (sig !== R.skillSig) {
     R.skillSig = sig;
@@ -868,7 +953,7 @@ class MainScene extends Phaser.Scene {
     }
     this.enemyImgs = [];
     this.playerImg = this.add.image(0, 0, 'ch_' + GAME_CONFIG.キャラクター[0].id).setScale(2.5).setVisible(false);
-    showMenu();
+    showTitle();
   }
 
   update(time, delta) {
@@ -879,7 +964,9 @@ class MainScene extends Phaser.Scene {
     this.enemyImgUsed = 0;
     if (!R) { this.enemyImgs.forEach(i => i.setVisible(false)); this.drawGrid(g, W, H, 0, 0); return; }
 
-    if (G.state === 'play' && !R.over) this.step(dt);
+    if (G.state === 'play' && !R.over) {
+      for (let i = 0; i < R.con.speed && G.state === 'play' && !R.over; i++) this.step(dt);
+    }
     else if (R.over && G.state === 'play') G.state = 'over';
 
     const cx = R.p.x, cy = R.p.y;

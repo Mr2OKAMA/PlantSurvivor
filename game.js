@@ -602,9 +602,10 @@ function renderChoices(choices) {
     const c = document.createElement('div');
     c.className = 'card';
     const eff = d.種別 === 'passive' ? d.効果文 : '威力+30% / 冷却短縮' + (cur % 2 === 1 ? ' / 数+' + (d.countStep || 1) : '');
-    c.innerHTML = `<div class="t"></div><div class="d"></div>`;
-    c.firstChild.textContent = cur ? `${d.名前}  Lv.${cur} → Lv.${cur + 1}` : `【新規】${d.名前}`;
-    c.lastChild.textContent = cur ? `${d.説明}（${eff}）` : d.説明;
+    c.innerHTML = `<div style="display:flex;gap:10px;align-items:center">${skillIconHtml(id, 48)}<div><div class="t"></div><div class="d"></div></div></div>`;
+    const tx = c.querySelector('.t'), ds = c.querySelector('.d');
+    tx.textContent = cur ? `${d.名前}  Lv.${cur} → Lv.${cur + 1}` : `【新規】${d.名前}`;
+    ds.textContent = cur ? `${d.説明}（${eff}）` : d.説明;
     c.onclick = () => { addSkill(id); recalc(); closeLevelUp(); };
     if (R.blocks > 0) {
       const bb = document.createElement('button');
@@ -814,7 +815,11 @@ function updateHud(dt) {
   $('hpbar').firstElementChild.style.width = Math.max(0, p.hp / p.maxHp * 100) + '%';
   $('xpbar').firstElementChild.style.width = (p.xp / p.xpNext * 100) + '%';
   $('info').textContent = `${fmtTime(R.t)} / ${GAME_CONFIG.クリア時間分}:00　Lv.${p.lv}　HP ${Math.ceil(p.hp)}/${p.maxHp}　撃破 ${R.kills}` + (R.toastT > 0 ? '　◆' + R.toast : '');
-  $('skills').textContent = Object.keys(p.skills).map(id => `${SK[id].名前}${SK[id].evo ? '★' : ' Lv.' + p.skills[id]}`).join(' ／ ');
+  const sig = Object.keys(p.skills).map(id => id + ':' + p.skills[id]).join(',');
+  if (sig !== R.skillSig) {
+    R.skillSig = sig;
+    $('skills').innerHTML = Object.keys(p.skills).map(id => `<span title="${SK[id].名前}" style="display:inline-block;margin-right:6px;text-align:center;line-height:1">${skillIconHtml(id, 28)}<br><small>${SK[id].evo ? '★' : 'Lv.' + p.skills[id]}</small></span>`).join('');
+  }
 }
 
 class MainScene extends Phaser.Scene {

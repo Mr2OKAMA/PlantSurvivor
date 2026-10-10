@@ -758,11 +758,21 @@ function showTitle() {
   }
   $('titleName').textContent = GAME_CONFIG.タイトル;
   $('continueBtn').disabled = !hasSave();
+  newGameArmed = false;
+  $('newGameBtn').textContent = 'ニューゲーム';
   $('title').classList.add('show');
 }
 
+let newGameArmed = false;
 $('newGameBtn').onclick = () => {
-  if (hasSave() && !confirm('既存のセーブデータを消して初めから始めますか？')) return;
+  // confirm() はiframe等でブロックされ無反応になるため、ページ内で二度押し確認する
+  if (hasSave() && !newGameArmed) {
+    newGameArmed = true;
+    $('newGameBtn').textContent = 'セーブを消して開始？（もう一度押す）';
+    return;
+  }
+  newGameArmed = false;
+  $('newGameBtn').textContent = 'ニューゲーム';
   try { localStorage.removeItem(GAME_CONFIG.メタ保存キー); } catch (e) { /* ignore */ }
   Meta.reset();
   Meta.save();

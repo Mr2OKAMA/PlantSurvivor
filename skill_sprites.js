@@ -417,15 +417,97 @@ const SKILL_SPRITES = {
   ],
 };
 
-// 微生物スキルのアイコン (既存の絵を色替えして流用)
-function recolorSkillSprite(src, map) {
-  return SKILL_SPRITES[src].map(r => r.split('').map(c => map[c] || c).join(''));
-}
-SKILL_SPRITES.cirri = recolorSkillSprite('hypo', { l: 'y' });
-SKILL_SPRITES.shell = recolorSkillSprite('filter', { w: 'n', W: 'm' });
-SKILL_SPRITES.tun = recolorSkillSprite('nova', { u: 'v', U: 'V', g: 'v', G: 'V' });
-SKILL_SPRITES.photo = recolorSkillSprite('uv', { p: 'l', P: 'G' });
-SKILL_SPRITES.spine = recolorSkillSprite('blower', { w: 'r', c: 'e' });
+// 微生物スキル(固有スキル)のアイコン
+SKILL_SPRITES.cirri = [
+  'o..o..o..o..o..o',
+  '.o..o.o.o.o..o..',
+  '..o.yoyoyoy.o...',
+  'o.oyyYyyyYyyyo.o',
+  '.oyyyyyyyyyyyyo.',
+  '..oyywyyyywyyo.o',
+  'oooyywyyyyyyyyoo',
+  '..oyyyyYYyyyyo..',
+  'oooyyyyyyyywyoo.',
+  '..oyyyyyyyyyyo.o',
+  '.oyyywyyyyyyyyo.',
+  'o.oyyyyyYyyyyo.o',
+  '..o.yoyoyoyo.o..',
+  '.o..o.o.o.o..o..',
+  'o..o..o..o..o..o',
+  '................',
+];
+SKILL_SPRITES.shell = [
+  '................',
+  '.....oooooo.....',
+  '...ooNNmmmmoo...',
+  '..oNNmmmmmmmmo..',
+  '.oNmmmoooommmmo.',
+  '.oNmmoNNNNommmo.',
+  'oNmmoNmmmmNommmo',
+  'oNmmoNmoomNommmo',
+  'oNmmoNmmmoNommmo',
+  'oNmmmoNNNNommmmo',
+  '.oNmmmoooommmmo.',
+  '.oNNmmmmmmmmmmo.',
+  '..ooNNmmmmmmoo..',
+  '....ooNNNNNoo...',
+  '......oooooo....',
+  '................',
+];
+SKILL_SPRITES.tun = [
+  'v...v......v...v',
+  '.v.v........v.v.',
+  '..v..oooooo..v..',
+  'v...oVvvvvVo...v',
+  '...oVvvvvvvVo...',
+  '...oVVVVVVVVo...',
+  '...ovvvvvvvvo...',
+  'v..oVvvwvvvVo..v',
+  '...oVvvwvvvVo...',
+  '...ovvvvvvvvo...',
+  '...oVVVVVVVVo...',
+  '..voVvvvvvvVov..',
+  '.v..oVvvvvVo..v.',
+  'v....oooooo....v',
+  '................',
+  '................',
+];
+SKILL_SPRITES.photo = [
+  '................',
+  '...........ll...',
+  '..ooooo...lwl...',
+  '.oGlllGo.lwl....',
+  'oGllllllollwl...',
+  'oGllwllGGwl.....',
+  'oGlllllGlwl.l...',
+  '.oGllllGowl.ll..',
+  '..ooGGGoo.wl.l..',
+  '...o.o.o..lwl...',
+  '.....l.....lwl..',
+  '....lwl.....ll..',
+  '...lwl..........',
+  '................',
+  '................',
+  '................',
+];
+SKILL_SPRITES.spine = [
+  '..r....r.r....r.',
+  '...r...r.r...r..',
+  'r...r.oooo.r...r',
+  '.r..oorrrroo..r.',
+  '..roerrrrrreor..',
+  '...orreerrrrro..',
+  'rrroreeerrrrorrr',
+  '...orrrrrrrrro..',
+  '...orrrrrrrrro..',
+  'rrroreerrrrrorrr',
+  '...orrrrrrrro...',
+  '..roorrrrrroor..',
+  '.r..oooooooo..r.',
+  'r...r.r..r.r...r',
+  '..r...r..r...r..',
+  '................',
+];
 
 // スキルアイコンをCanvasに描画して返す
 function makeSkillIcon(id, scale = 1) {

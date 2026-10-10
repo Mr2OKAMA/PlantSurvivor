@@ -25,6 +25,13 @@ const GAME_CONFIG = {
       HP: 220, 速度: 85, 防御: 3, 回復: 0.3, 吸引: 1.0, 色: 0xb8a7e8, 初期スキル: 'scraper' },
     { id: 'midorimushi', 名前: 'ミドリムシ', タイプ: '自動回復・光合成型', 説明: '光合成でHPが自動回復する。',
       HP: 90, 速度: 115, 防御: 0, 回復: 1.2, 吸引: 1.0, 色: 0x6dff8a, 初期スキル: 'uv' },
+    // ---- ショップで開放するキャラクター（解放価格: 処理ポイント）----
+    { id: 'rotaria', 名前: 'ロタリア', タイプ: '回転・周回特化型', 説明: '繊毛の輪を回転させて戦う。周回スキルの数が+1される。',
+      HP: 95, 速度: 110, 防御: 1, 回復: 0, 吸引: 1.2, 色: 0xff9ec4, 初期スキル: 'cilia', 特性: 'orbit', 特性名: '輪盤回転：周回スキルの数+1', 解放価格: 500 },
+    { id: 'euprotes', 名前: 'ユープロテス', タイプ: '反撃・重装型', 説明: '硬い殻と棘状の繊毛を持つ。被弾すると衝撃波で反撃する。',
+      HP: 140, 速度: 100, 防御: 2, 回復: 0, 吸引: 1.0, 色: 0xff7a5c, 初期スキル: 'nova', 特性: 'thorns', 特性名: '棘の反撃：被弾時に衝撃波', 解放価格: 800 },
+    { id: 'tokophilia', 名前: 'トコフィリア', タイプ: '吸収・回復型', 説明: '吸盤触手で獲物を捕らえる。敵を倒すとHPを吸収する。',
+      HP: 110, 速度: 105, 防御: 0, 回復: 0, 吸引: 1.8, 色: 0xc77dff, 初期スキル: 'sucker', 特性: 'drain', 特性名: '吸盤捕食：撃破でHP+0.6', 解放価格: 1200 },
   ],
 
   // ---------- B. スキル ----------
@@ -38,6 +45,8 @@ const GAME_CONFIG = {
     filter:   { 名前: 'ろ過フィルター', 種別: 'orbit', 説明: '自分の周りを回り、触れた敵を傷つける。', dmg: 6, cd: 0, count: 2, area: 80, rot: 3, r: 12, color: 0xffffff },
     ozone:    { 名前: 'オゾン発生器', 種別: 'spread', 説明: '前方に扇状のオゾンを発射する。', dmg: 6, cd: 1.4, count: 3, speed: 380, spread: 0.5, r: 6, pierce: 0, life: 0.8, color: 0xa0b4ff },
     scraper:  { 名前: '汚泥掻き寄せ機', 種別: 'proj', 説明: '低速で敵を貫通する大きな刃。', dmg: 15, cd: 2.8, count: 1, speed: 160, r: 22, pierce: 99, life: 2.5, color: 0xc9a27a },
+    cilia:    { 名前: '繊毛の輪', 種別: 'orbit', 説明: '高速回転する繊毛の輪が敵を払う。', dmg: 5, cd: 0, count: 3, area: 65, rot: 5, r: 10, color: 0xffc2dc },
+    sucker:   { 名前: '吸盤触手', 種別: 'proj', 説明: '敵に吸盤触手を伸ばす。ゆっくりだが貫通する。', dmg: 10, cd: 1.3, count: 1, speed: 300, r: 11, pierce: 2, life: 1.0, color: 0xd9a3ff },
     nova:     { 名前: '逆洗パルス', 種別: 'nova', 説明: '自分を中心に衝撃波を広げる。', dmg: 10, cd: 3.0, count: 1, area: 160, color: 0x7fd8ff },
     // パッシブ (stat: 加算する能力, per: 1Lvあたりの加算値)
     ph:       { 名前: 'pH調整剤', 種別: 'passive', 説明: '移動速度が上がる。', stat: 'speed', per: 0.08, 効果文: '移動速度 +8%' },
@@ -138,7 +147,7 @@ const GAME_CONFIG = {
 // ============================================================
 const Meta = {
   data: { points: 0, clears: 0, choices4: false, reroll: 0, hp: 0, speed: 0, power: 0, area: 0, cd: 0, xp: 0, magnet: 0, regen: 0, guard: 0,
-    startLv: 0, revive: 0, skip: 0, block: 0, pointMul: 0, rarity: 0, bossBonus: 0 },
+    startLv: 0, revive: 0, skip: 0, block: 0, pointMul: 0, rarity: 0, bossBonus: 0, unlocked: [] },
   load() {
     try {
       const s = localStorage.getItem(GAME_CONFIG.メタ保存キー);
@@ -220,9 +229,14 @@ function skillStats(id) {
   return {
     dmg: d.dmg * (1 + 0.3 * f) * m.power,
     cd: Math.max(0.1, d.cd * (1 - 0.06 * f) * m.cd),
-    count: d.count + Math.floor(f / 2) * (d.countStep || 1),
+    count: d.count + Math.floor(f / 2) * (d.countStep || 1) + (d.種別 === 'orbit' && R.ch.特性 === 'orbit' ? 1 : 0),
     area: (d.area || 1) * (1 + 0.1 * f),
   };
+}
+
+function thorns() {
+  if (R.ch.特性 !== 'thorns') return;
+  R.novas.push({ x: R.p.x, y: R.p.y, r: 0, max: 130 * R.p.mods.area, dmg: 15 * R.p.mods.power, hit: new Set(), color: 0xff7a5c });
 }
 
 function toast(msg) { R.toast = msg; R.toastT = 3; }
@@ -271,6 +285,7 @@ function hurt(e, dmg) {
 function killEnemy(e) {
   e.dead = true; R.kills++;
   dropOrb(e.x, e.y, e.def.経験値);
+  if (R.ch.特性 === 'drain') R.p.hp = Math.min(R.p.maxHp, R.p.hp + 0.6);
   if (e.def.ボス) {
     R.chests.push({ x: e.x, y: e.y });
     R.bossKills++;
@@ -469,6 +484,7 @@ function updateEnemies(dt) {
       const dmg = Math.max(1, Math.round((e.def.攻撃 - R.ch.防御) * (1 - 0.03 * Meta.data.guard)));
       p.hp -= dmg; p.inv = 0.5; R.flash = 0.15;
       popup(p.x, p.y - 14, '-' + dmg, '#ff6666');
+      thorns();
     }
   }
   R.enemies = R.enemies.filter(e => !e.dead);
@@ -478,6 +494,7 @@ function updateEnemies(dt) {
       const dmg = Math.max(1, Math.round((b.dmg - R.ch.防御) * (1 - 0.03 * Meta.data.guard)));
       p.hp -= dmg; p.inv = 0.5; R.flash = 0.15; b.life = 0;
       popup(p.x, p.y - 14, '-' + dmg, '#ff6666');
+      thorns();
     }
   }
   R.ebullets = R.ebullets.filter(b => b.life > 0);
@@ -641,12 +658,21 @@ function endRun() {
 }
 
 // ---------- メニュー ----------
+function isLocked(c) { return !!c.解放価格 && !Meta.data.unlocked.includes(c.id); }
+
 function showMenu() {
   G.state = 'menu';
   const md = Meta.data;
-  const chars = GAME_CONFIG.キャラクター.map(c => `<button class="char" data-id="${c.id}" ${c.id === G.selChar ? 'style="border-color:#fd4"' : ''}>
-      <div class="t"><img src="${makeSpriteCanvas(c.id, 4).toDataURL()}" width="48" height="48" style="image-rendering:pixelated;vertical-align:middle;margin-right:6px">${c.名前} <small>（${c.タイプ}）</small></div>
-      <div class="d">${c.説明}<br>HP ${c.HP} ／ 速度 ${c.速度} ／ 初期スキル：${SK[c.初期スキル].名前}</div></button>`).join('');
+  const chars = GAME_CONFIG.キャラクター.map(c => {
+    const locked = isLocked(c);
+    const sprite = `<img src="${makeSpriteCanvas(c.id, 4).toDataURL()}" width="48" height="48" style="image-rendering:pixelated;vertical-align:middle;margin-right:6px${locked ? ';filter:brightness(0)' : ''}">`;
+    if (locked) return `<button class="char locked" data-id="${c.id}" ${md.points < c.解放価格 ? 'disabled' : ''}>
+      <div class="t">${sprite}${c.名前} <small>（${c.タイプ}）</small> <small>🔒 ${c.解放価格}pt で開放</small></div>
+      <div class="d">${c.説明}<br>特性：${c.特性名}<br>HP ${c.HP} ／ 速度 ${c.速度} ／ 初期スキル：${SK[c.初期スキル].名前}</div></button>`;
+    return `<button class="char" data-id="${c.id}" ${c.id === G.selChar ? 'style="border-color:#fd4"' : ''}>
+      <div class="t">${sprite}${c.名前} <small>（${c.タイプ}）</small></div>
+      <div class="d">${c.説明}${c.特性名 ? '<br>特性：' + c.特性名 : ''}<br>HP ${c.HP} ／ 速度 ${c.速度} ／ 初期スキル：${SK[c.初期スキル].名前}</div></button>`;
+  }).join('');
   const shop = GAME_CONFIG.ショップ.map(s => {
     const n = md[s.id], maxed = n >= s.最大, cost = s.価格(n);
     return `<button class="shop" data-id="${s.id}" ${maxed || md.points < cost ? 'disabled' : ''}>
@@ -663,7 +689,14 @@ function showMenu() {
 $('menuPanel').addEventListener('click', ev => {
   const b = ev.target.closest('button');
   if (!b || b.disabled) return;
-  if (b.classList.contains('char')) { G.selChar = b.dataset.id; showMenu(); }
+  if (b.classList.contains('char')) {
+    const c = GAME_CONFIG.キャラクター.find(x => x.id === b.dataset.id);
+    if (isLocked(c)) {
+      if (Meta.data.points < c.解放価格) return;
+      Meta.data.points -= c.解放価格; Meta.data.unlocked.push(c.id); Meta.save();
+    }
+    G.selChar = c.id; showMenu();
+  }
   else if (b.classList.contains('shop')) {
     const s = GAME_CONFIG.ショップ.find(x => x.id === b.dataset.id), md = Meta.data, cost = s.価格(md[s.id]);
     if (md.points >= cost && md[s.id] < s.最大) { md.points -= cost; md[s.id]++; Meta.save(); showMenu(); }

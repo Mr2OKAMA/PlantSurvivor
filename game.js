@@ -228,7 +228,7 @@ function newRun(contract) {
     ch, contract: contract || null, con: Object.assign({ speed: 1, atk: 1, xp: 1, spawn: 1, hp: 1, choices: 1 }, contract ? CT[contract] : {}),
     t: 0, kills: 0, over: false, won: false,
     p: { x: 0, y: 0, hp: maxHp, maxHp, inv: 0, lv: 1, xp: 0, xpNext: xpNeed(1), skills: {}, timers: {}, mods: null, face: 0 },
-    enemies: [], bullets: [], ebullets: [], orbs: [], chests: [], zones: [], fx: [], novas: [],
+    enemies: [], bullets: [], ebullets: [], orbs: [], items: [], chests: [], zones: [], fx: [], novas: [],
     waveT: GAME_CONFIG.ウェーブ.map(() => 0), bossDone: {}, nextId: 1,
     pending: 0, rerolls: Meta.data.reroll, skips: Meta.data.skip, blocks: Meta.data.block, blocked: new Set(),
     revives: Meta.data.revive, bossKills: 0, bonusPts: 0, toast: '', toastT: 0, hudT: 0, flash: 0,
@@ -333,6 +333,7 @@ function killEnemy(e) {
     toast(`図鑑登録：${e.def.名前} (+1図鑑pt)`);
   }
   dropOrb(e.x, e.y, e.def.経験値);
+  if (Math.random() < ITEM_DROP_RATE) R.items.push({ x: e.x, y: e.y, type: pick(Object.keys(ITEM_SPRITES)) });
   if (R.ch.特性 === 'drain') R.p.hp = Math.min(R.p.maxHp, R.p.hp + 0.6);
   if (e.def.ボス) {
     R.chests.push({ x: e.x, y: e.y });
@@ -340,6 +341,9 @@ function killEnemy(e) {
     if (e.def.最終) win();
   }
 }
+
+const ITEM_DROP_RATE = 0.005; // 0.5%（3種は等確率）
+const ITEM_NAMES = { heal: '若葉の雫', magnet: '磁石花', star: '金の根' };
 
 function dropOrb(x, y, v) {
   if (R.orbs.length > 400) { pick(R.orbs).v += v; return; }
@@ -540,7 +544,7 @@ function updateEnemies(dt) {
       dir = d < 230 ? -1 : (d > 330 ? 1 : 0);
     }
     e.x += dx / d * sp * dt * dir; e.y += dy / d * sp * dt * dir;
-    if (p.inv <= 0 && d < e.r + 10) {
+    if (p.inv <= 0 && !(p.god > 0) && d < e.r + 10) {
       const dmg = Math.max(1, Math.round((e.def.攻撃 * R.con.atk - R.ch.防御) * (1 - 0.03 * Meta.data.guard)));
       p.hp -= dmg; p.inv = 0.5; R.flash = 0.15; SFX.play('hurt', 0.1);
       popup(p.x, p.y - 14, '-' + dmg, '#ff6666');
@@ -550,7 +554,7 @@ function updateEnemies(dt) {
   R.enemies = R.enemies.filter(e => !e.dead);
   for (const b of R.ebullets) {
     b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt;
-    if (p.inv <= 0 && Math.hypot(p.x - b.x, p.y - b.y) < b.r + 10) {
+    if (p.inv <= 0 && !(p.god > 0) && Math.hypot(p.x - b.x, p.y - b.y) < b.r + 10) {
       const dmg = Math.max(1, Math.round((b.dmg - R.ch.防御) * (1 - 0.03 * Meta.data.guard)));
       p.hp -= dmg; p.inv = 0.5; R.flash = 0.15; b.life = 0; SFX.play('hurt', 0.1);
       popup(p.x, p.y - 14, '-' + dmg, '#ff6666');
@@ -575,8 +579,23 @@ function updateOrbs(dt) {
     if (d < 14) { o.got = true; SFX.play('xp', 0.05); gainXp(o.v * p.mods.xp * R.con.xp); }
   }
   R.orbs = R.orbs.filter(o => !o.got);
+  for (const it of R.items) {
+    const d = Math.hypot(p.x - it.x, p.y - it.y);
+    if (d < mr) it.mag = true;
+    if (it.mag && d > 0) { it.x += (p.x - it.x) / d * 420 * dt; it.y += (p.y - it.y) / d * 420 * dt; }
+    if (d < 16) { it.got = true; SFX.play('xp', 0.05); pickItem(it.type); }
+  }
+  R.items = R.items.filter(it => !it.got);
   for (const c of R.chests) if (Math.hypot(p.x - c.x, p.y - c.y) < 24) { c.got = true; openChest(); }
   R.chests = R.chests.filter(c => !c.got);
+}
+
+function pickItem(type) {
+  const p = R.p;
+  toast(ITEM_NAMES[type]);
+  if (type === 'heal') p.hp = Math.min(p.maxHp, p.hp + p.maxHp * 0.2);
+  else if (type === 'magnet') { for (const o of R.orbs) o.mag = true; for (const it of R.items) it.mag = true; }
+  else if (type === 'star') p.god = 10;
 }
 
 function gainXp(v) {
@@ -999,7 +1018,7 @@ class MainScene extends Phaser.Scene {
     R.t += dt;
     p.x += m.x * R.ch.速度 * p.mods.speed * dt; p.y += m.y * R.ch.速度 * p.mods.speed * dt;
     if (m.x || m.y) p.face = Math.atan2(m.y, m.x);
-    p.inv -= dt; R.flash -= dt;
+    p.inv -= dt; R.flash -= dt; if (p.god > 0) p.god -= dt;
     p.hp = Math.min(p.maxHp, p.hp + p.mods.regen * dt);
     updateSpawns(dt);
     updateSkills(dt);
@@ -1023,6 +1042,11 @@ class MainScene extends Phaser.Scene {
       g.lineStyle(2, z.color, 0.6).strokeCircle(sx(z.x), sy(z.y), z.r);
     }
     for (const o of R.orbs) if (vis(o.x, o.y, 10)) g.fillStyle(o.v >= 5 ? 0xffe14d : 0x4dffb0, 1).fillCircle(sx(o.x), sy(o.y), o.v >= 5 ? 6 : 4);
+    for (const it of R.items) {
+      if (!vis(it.x, it.y, 16)) continue;
+      const sp = ITEM_SPRITES[it.type], X = sx(it.x) - 12, Y = sy(it.y) - 12 + Math.sin(R.t * 5) * 2;
+      sp.絵.forEach((row, yy) => { for (let xx = 0; xx < row.length; xx++) { const col = sp.パレット[row[xx]]; if (col) g.fillStyle(parseInt(col.slice(1), 16), 1).fillRect(X + xx * 2, Y + yy * 2, 2, 2); } });
+    }
     for (const c of R.chests) {
       const X = sx(c.x), Y = sy(c.y);
       g.fillStyle(0x000000, 0.3).fillRect(X - 14, Y + 9, 28, 4);
@@ -1071,7 +1095,7 @@ class MainScene extends Phaser.Scene {
     const blink = p.inv > 0 && Math.floor(p.inv * 20) % 2 === 0;
     if (!blink) {
       const X = sx(p.x), Y = sy(p.y);
-      this.playerImg.setTexture('ch_' + R.ch.id).setPosition(X, Y).setFlipX(Math.cos(p.face) > 0).setVisible(true);
+      this.playerImg.setTint(p.god > 0 ? 0xffee66 : 0xffffff).setTexture('ch_' + R.ch.id).setPosition(X, Y).setFlipX(Math.cos(p.face) > 0).setVisible(true);
     }
     if (R.flash > 0) g.fillStyle(0xff0000, 0.25 * (R.flash / 0.15)).fillRect(0, 0, W, H);
   }

@@ -417,6 +417,16 @@ const SKILL_SPRITES = {
   ],
 };
 
+// 微生物スキルのアイコン (既存の絵を色替えして流用)
+function recolorSkillSprite(src, map) {
+  return SKILL_SPRITES[src].map(r => r.split('').map(c => map[c] || c).join(''));
+}
+SKILL_SPRITES.cirri = recolorSkillSprite('hypo', { l: 'y' });
+SKILL_SPRITES.shell = recolorSkillSprite('filter', { w: 'n', W: 'm' });
+SKILL_SPRITES.tun = recolorSkillSprite('nova', { u: 'v', U: 'V', g: 'v', G: 'V' });
+SKILL_SPRITES.photo = recolorSkillSprite('uv', { p: 'l', P: 'G' });
+SKILL_SPRITES.spine = recolorSkillSprite('blower', { w: 'r', c: 'e' });
+
 // スキルアイコンをCanvasに描画して返す
 function makeSkillIcon(id, scale = 1) {
   const rows = SKILL_SPRITES[id];

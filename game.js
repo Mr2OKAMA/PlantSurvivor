@@ -147,7 +147,7 @@ const GAME_CONFIG = {
 // ============================================================
 const Meta = {
   data: { points: 0, clears: 0, choices4: false, reroll: 0, hp: 0, speed: 0, power: 0, area: 0, cd: 0, xp: 0, magnet: 0, regen: 0, guard: 0,
-    startLv: 0, revive: 0, skip: 0, block: 0, pointMul: 0, rarity: 0, bossBonus: 0, unlocked: [] },
+    startLv: 0, revive: 0, skip: 0, block: 0, pointMul: 0, rarity: 0, bossBonus: 0, unlocked: [], bestiary: [] },
   load() {
     try {
       const s = localStorage.getItem(GAME_CONFIG.メタ保存キー);
@@ -284,6 +284,10 @@ function hurt(e, dmg) {
 
 function killEnemy(e) {
   e.dead = true; R.kills++;
+  if (!Meta.data.bestiary.includes(e.key)) {
+    Meta.data.bestiary.push(e.key); Meta.save();
+    toast(`図鑑登録：${e.def.名前} (+1図鑑pt)`);
+  }
   dropOrb(e.x, e.y, e.def.経験値);
   if (R.ch.特性 === 'drain') R.p.hp = Math.min(R.p.maxHp, R.p.hp + 0.6);
   if (e.def.ボス) {
@@ -569,8 +573,14 @@ function levelChoices() {
 
 function showLevelUp() {
   G.state = 'levelup';
+  const choices = levelChoices();
+  if (!choices.length && R.autoHeal) {
+    R.p.hp = Math.min(R.p.maxHp, R.p.hp + R.p.maxHp * 0.3);
+    closeLevelUp();
+    return;
+  }
   $('luTitle').textContent = `レベルアップ！ Lv.${R.p.lv - R.pending + 1}`;
-  renderChoices(levelChoices());
+  renderChoices(choices);
   $('levelup').classList.add('show');
 }
 
@@ -581,7 +591,7 @@ function renderChoices(choices) {
     const c = document.createElement('div');
     c.className = 'card';
     c.innerHTML = '<div class="t">栄養補給</div><div class="d">選べるスキルがない。HPを30%回復する。</div>';
-    c.onclick = () => { R.p.hp = Math.min(R.p.maxHp, R.p.hp + R.p.maxHp * 0.3); closeLevelUp(); };
+    c.onclick = () => { R.autoHeal = true; R.p.hp = Math.min(R.p.maxHp, R.p.hp + R.p.maxHp * 0.3); closeLevelUp(); };
     box.appendChild(c);
   }
   choices.forEach(id => {
@@ -660,6 +670,17 @@ function endRun() {
 // ---------- メニュー ----------
 function isLocked(c) { return !!c.解放価格 && !Meta.data.unlocked.includes(c.id); }
 
+function dexHtml() {
+  const dex = Meta.data.bestiary, pts = dex.length, total = Object.keys(EN).length;
+  const names = Object.keys(EN).map(k => dex.includes(k) ? EN[k].名前 : '？？？').join(' ／ ');
+  const evo = pts >= 10
+    ? GAME_CONFIG.進化.map(ev => `${SK[ev.結果].名前}：${SK[ev.基本].名前}をMaxレベルに＋${SK[ev.必要].名前}を所持して宝箱を取得`).join('<br>')
+    : `図鑑ptが10に達すると進化スキルの条件が見られる（あと ${10 - pts}pt）`;
+  return `<h3>敵図鑑 <small>図鑑pt ${pts} ／ 全${total}種</small></h3>
+    <div style="font-size:12px;text-align:left;margin-bottom:6px">${names}</div>
+    <div style="font-size:13px;text-align:left;border:1px solid #5ab;border-radius:6px;padding:6px"><b>進化スキル条件</b><br>${evo}</div>`;
+}
+
 function showMenu() {
   G.state = 'menu';
   const md = Meta.data;
@@ -680,6 +701,7 @@ function showMenu() {
   }).join('');
   $('menuPanel').innerHTML = `<h2>${GAME_CONFIG.タイトル}</h2>
     <p style="font-size:13px">移動：WASD / 矢印キー / 画面タッチドラッグ。スキルは自動攻撃。<br>${GAME_CONFIG.クリア時間分}分間生き延びて最終ボスを倒せ！</p>
+    ${dexHtml()}
     <h3>キャラクター選択</h3>${chars}
     <h3>強化ショップ <small>所持 ${md.points}pt ／ クリア ${md.clears}回 ／ 選択肢 ${md.choices4 ? 4 : 3}枠${md.choices4 ? '' : '（初回クリアで解放）'}</small></h3>${shop}
     <button id="startBtn" style="text-align:center;font-weight:bold;background:#1d7a4f">ゲーム開始</button>`;

@@ -712,6 +712,20 @@ function showMenu() {
   $('menu').classList.add('show');
 }
 
+function showDex() {
+  const dex = Meta.data.bestiary;
+  $('dexList').innerHTML = Object.keys(EN).map(k => {
+    const known = dex.includes(k), e = EN[k];
+    const img = `<img src="${makeSpriteCanvas(k, 4).toDataURL()}" width="64" height="64"${known ? '' : ' style="filter:brightness(0)"'}>`;
+    if (!known) return `<div class="dexItem">${img}<div><div class="n">？？？</div><div class="x">まだ遭遇していない。</div></div></div>`;
+    return `<div class="dexItem">${img}<div><div class="n">${e.名前}</div>
+      <div class="s">HP ${e.hp} ／ 速度 ${e.速度} ／ 攻撃 ${e.攻撃}</div><div class="x">${DEX_TEXT[k] || ''}</div></div></div>`;
+  }).join('');
+  $('dex').classList.add('show');
+}
+$('dexBtn').onclick = showDex;
+$('dexClose').onclick = () => $('dex').classList.remove('show');
+
 $('menuPanel').addEventListener('click', ev => {
   const b = ev.target.closest('button');
   if (!b || b.disabled) return;
@@ -732,6 +746,7 @@ $('menuPanel').addEventListener('click', ev => {
 function startGame() {
   newRun();
   $('menu').classList.remove('show');
+  $('dex').classList.remove('show');
   $('levelup').classList.remove('show');
   $('result').classList.remove('show');
   G.state = 'play';

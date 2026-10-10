@@ -23,6 +23,7 @@
   .row { display: flex; gap: 8px; } .row > * { flex: 1; }
   #joy { position: fixed; width: 110px; height: 110px; margin: -55px 0 0 -55px; border: 2px solid #8fe; border-radius: 50%; opacity: .5; display: none; pointer-events: none; z-index: 5; }
   #joy > div { position: absolute; width: 50px; height: 50px; left: 30px; top: 30px; border-radius: 50%; background: #8fe; }
+  #titleBackBtn { position: absolute; top: 10px; right: 68px; width: 48px; height: 48px; padding: 0; margin: 0; font-size: 26px; text-align: center; z-index: 12; }
   #dexBtn { position: absolute; top: 10px; right: 10px; width: 48px; height: 48px; padding: 0; margin: 0; font-size: 26px; text-align: center; z-index: 12; }
   #dex { z-index: 11; }
   .dexItem { display: flex; gap: 10px; align-items: center; text-align: left; border: 1px solid #5ab; border-radius: 8px; padding: 8px; margin: 6px 0; }
@@ -50,7 +51,7 @@
   <div id="titleBg"></div>
   <div id="titleBox"><h1 id="titleName"></h1><button id="newGameBtn">ニューゲーム</button><button id="continueBtn">つづきから</button></div>
 </div>
-<div class="overlay" id="menu"><button id="dexBtn" title="図鑑">📖</button><div class="panel" id="menuPanel"></div></div>
+<div class="overlay" id="menu"><button id="titleBackBtn" title="タイトルに戻る">🏠</button><button id="dexBtn" title="図鑑">📖</button><div class="panel" id="menuPanel"></div></div>
 <div class="overlay" id="dex"><div class="panel"><h2>敵図鑑</h2><div id="dexList"></div><button id="dexClose" style="text-align:center">閉じる</button></div></div>
 <div class="overlay" id="levelup"><div class="panel"><h2 id="luTitle">レベルアップ！</h2><div id="luCards"></div><div class="row"><button id="rerollBtn"></button><button id="skipBtn"></button></div></div></div>
 <div class="overlay" id="contract"><div class="panel"><h2>契約を選ぶ</h2><div id="ctCards"></div></div></div>

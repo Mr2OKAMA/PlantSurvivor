@@ -819,6 +819,7 @@ function showDex() {
   $('dex').classList.add('show');
 }
 $('dexBtn').onclick = showDex;
+$('titleBackBtn').onclick = showTitle;
 $('dexClose').onclick = () => $('dex').classList.remove('show');
 
 $('menuPanel').addEventListener('click', ev => {

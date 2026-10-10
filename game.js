@@ -182,6 +182,10 @@ const GAME_CONFIG = {
 const Meta = {
   data: { points: 0, clears: 0, choices4: false, reroll: 0, hp: 0, speed: 0, power: 0, area: 0, cd: 0, xp: 0, magnet: 0, regen: 0, guard: 0,
     startLv: 0, revive: 0, skip: 0, block: 0, pointMul: 0, rarity: 0, bossBonus: 0, unlocked: [], bestiary: [], contracts: [] },
+  reset() {
+    this.data = { points: 0, clears: 0, choices4: false, reroll: 0, hp: 0, speed: 0, power: 0, area: 0, cd: 0, xp: 0, magnet: 0, regen: 0, guard: 0,
+      startLv: 0, revive: 0, skip: 0, block: 0, pointMul: 0, rarity: 0, bossBonus: 0, unlocked: [], bestiary: [], contracts: [] };
+  },
   load() {
     try {
       const s = localStorage.getItem(GAME_CONFIG.メタ保存キー);
@@ -740,6 +744,40 @@ function dexHtml() {
     <div style="font-size:13px;text-align:left;border:1px solid #5ab;border-radius:6px;padding:6px"><b>進化スキル条件</b><br>${evo}</div>`;
 }
 
+function hasSave() {
+  try { return !!localStorage.getItem(GAME_CONFIG.メタ保存キー); } catch (e) { return false; }
+}
+
+function showTitle() {
+  G.state = 'title';
+  $('menu').classList.remove('show');
+  if (!$('titleBg').firstChild) {
+    const cv = makeTitleBackground();
+    cv.id = 'titleCanvas';
+    $('titleBg').appendChild(cv);
+  }
+  $('titleName').textContent = GAME_CONFIG.タイトル;
+  $('continueBtn').disabled = !hasSave();
+  $('title').classList.add('show');
+}
+
+$('newGameBtn').onclick = () => {
+  if (hasSave() && !confirm('既存のセーブデータを消して初めから始めますか？')) return;
+  try { localStorage.removeItem(GAME_CONFIG.メタ保存キー); } catch (e) { /* ignore */ }
+  Meta.reset();
+  G.selChar = GAME_CONFIG.キャラクター[0].id;
+  $('title').classList.remove('show');
+  showMenu();
+};
+$('continueBtn').onclick = () => {
+  if (!hasSave()) return;
+  Meta.reset();
+  Meta.load();
+  if (isLocked(GAME_CONFIG.キャラクター.find(c => c.id === G.selChar))) G.selChar = GAME_CONFIG.キャラクター[0].id;
+  $('title').classList.remove('show');
+  showMenu();
+};
+
 function showMenu() {
   G.state = 'menu';
   SFX.bgm('menu');
@@ -915,7 +953,7 @@ class MainScene extends Phaser.Scene {
     }
     this.enemyImgs = [];
     this.playerImg = this.add.image(0, 0, 'ch_' + GAME_CONFIG.キャラクター[0].id).setScale(2.5).setVisible(false);
-    showMenu();
+    showTitle();
   }
 
   update(time, delta) {

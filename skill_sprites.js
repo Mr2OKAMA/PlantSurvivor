@@ -511,7 +511,8 @@ SKILL_SPRITES.spine = [
 
 // スキルアイコンをCanvasに描画して返す
 function makeSkillIcon(id, scale = 1) {
-  const rows = SKILL_SPRITES[id];
+  const evoFallback = !SKILL_SPRITES[id] && id.endsWith('_evo');
+  const rows = SKILL_SPRITES[id] || SKILL_SPRITES[id.replace(/_evo$/, '')];
   const cv = document.createElement('canvas');
   cv.width = 16 * scale; cv.height = 16 * scale;
   const ctx = cv.getContext('2d');
@@ -523,6 +524,12 @@ function makeSkillIcon(id, scale = 1) {
       ctx.fillRect(x * scale, y * scale, scale, scale);
     }
   });
+  if (evoFallback) {
+    // 専用ドットが無い進化スキルは基本スキルの絵に金色の枠を付ける
+    ctx.strokeStyle = '#ffd24a';
+    ctx.lineWidth = Math.max(1, scale);
+    ctx.strokeRect(scale / 2, scale / 2, 16 * scale - scale, 16 * scale - scale);
+  }
   return cv;
 }
 

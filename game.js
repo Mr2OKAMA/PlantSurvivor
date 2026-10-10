@@ -53,7 +53,7 @@ const GAME_CONFIG = {
     cirri:    { 分類: '微生物', 名前: '棘毛連打', 種別: 'aura', 説明: '体表の棘毛で周囲の敵を素早く打つ。', dmg: 3, cd: 0.45, count: 1, area: 70, color: 0xffd27a },
     shell:    { 分類: '微生物', 名前: '殻の盾', 種別: 'orbit', 説明: '殻の破片が周囲を回り、敵を弾く。', dmg: 7, cd: 0, count: 2, area: 75, rot: 2.5, r: 13, color: 0xd9a066 },
     tun:      { 分類: '微生物', 名前: '樽化衝撃', 種別: 'nova', 説明: '休眠(樽)状態から衝撃を放つ。', dmg: 14, cd: 3.2, count: 1, area: 150, color: 0xb8a7e8 },
-    photo:    { 分類: '微生物', 名前: '光合成レーザー', 種別: 'lightning', 説明: '光エネルギーをランダムな敵に放つ。', dmg: 10, cd: 1.5, count: 2, range: 430, color: 0x6dff8a },
+    photo:    { 分類: '微生物', 名前: '光合成レーザー', 種別: 'lightning', 説明: '光エネルギーをランダムな敵に高頻度で放つ。命中した敵の最寄りの敵1体にも半分のダメージ。', chain: 0.5, dmg: 10, cd: 0.75, count: 2, range: 430, color: 0x6dff8a },
     spine:    { 分類: '微生物', 名前: '棘の弾幕', 種別: 'burst', 説明: '全方位に棘を飛ばす。', dmg: 6, cd: 2.0, count: 8, countStep: 2, speed: 280, r: 7, pierce: 1, life: 1.1, color: 0xff7a5c },
     // パッシブ (stat: 加算する能力, per: 1Lvあたりの加算値)
     ph:       { 分類: '施設', 名前: 'pH調整剤', 種別: 'passive', 説明: '移動速度が上がる。', stat: 'speed', per: 0.08, 効果文: '移動速度 +8%' },
@@ -64,6 +64,13 @@ const GAME_CONFIG = {
     magnet:   { 分類: '施設', 名前: '磁気ピックアップ', 種別: 'passive', 説明: 'エネルギーの吸引範囲が広がる。', stat: 'magnet', per: 0.3, 効果文: '吸引範囲 +30%' },
     enzyme:   { 分類: '施設', 名前: '酵素剤', 種別: 'passive', 説明: '獲得経験値が増える。', stat: 'xp', per: 0.10, 効果文: '経験値 +10%' },
     // 進化スキル (レベル固定)
+    cirri_evo:    { 分類: '微生物', 名前: '棘毛乱舞', 種別: 'aura', evo: true, 説明: '無数の棘毛が広範囲を超高速で打ち据える。', dmg: 6, cd: 0.25, count: 1, area: 120, color: 0xffe9a8 },
+    shell_evo:    { 分類: '微生物', 名前: '堅牢な殻の円環', 種別: 'orbit', evo: true, 説明: '大きな殻の破片が多数周回し、敵を弾き飛ばす。', dmg: 14, cd: 0, count: 5, area: 105, rot: 3.5, r: 16, color: 0xf0c080 },
+    tun_evo:      { 分類: '微生物', 名前: '超越休眠衝撃', 種別: 'nova', evo: true, 説明: '極限の休眠から広大な衝撃波を放つ。', dmg: 32, cd: 2.2, count: 1, area: 260, color: 0xd6c8ff },
+    photo_evo:    { 分類: '微生物', 名前: '集束光合成レーザー', 種別: 'lightning', evo: true, 説明: '大量のレーザーを連射し、連鎖ダメージも大きい。', chain: 0.75, dmg: 20, cd: 0.4, count: 5, range: 520, color: 0xb6ffc4 },
+    spine_evo:    { 分類: '微生物', 名前: '棘の嵐', 種別: 'burst', evo: true, 説明: '大量の棘を全方位へ撒き散らす。', dmg: 11, cd: 1.2, count: 16, speed: 320, r: 8, pierce: 3, life: 1.3, color: 0xff9a80 },
+    cilia_evo:    { 分類: '微生物', 名前: '繊毛の大渦', 種別: 'orbit', evo: true, 説明: '多数の繊毛の輪が超高速で渦を巻く。', dmg: 9, cd: 0, count: 7, area: 95, rot: 8, r: 12, color: 0xffd6e8 },
+    sucker_evo:   { 分類: '微生物', 名前: '大吸盤触手', 種別: 'proj', evo: true, 説明: '巨大な吸盤触手が敵を次々と貫く。', dmg: 22, cd: 0.8, count: 2, speed: 380, r: 16, pierce: 6, life: 1.2, color: 0xe6c0ff },
     blower_evo:   { 分類: '施設', 名前: '超高圧エアジェット', 種別: 'burst', evo: true, 説明: '最も近い敵を追尾する高圧空気を超高速で連射する。', homing: true, dmg: 16, cd: 0.12, count: 1, speed: 340, r: 10, pierce: 4, life: 1.4, color: 0xffffff },
     tentacle_evo: { 分類: '微生物', 名前: '双頭バネ触手', 種別: 'proj', evo: true, 説明: '貫通する触手ビームを連射する。', dmg: 16, cd: 0.7, count: 4, speed: 520, r: 9, pierce: 3, life: 1.4, color: 0xffb0ff },
     hypo_evo:     { 分類: '施設', 名前: '次亜塩素酸ミスト', 種別: 'aura', evo: true, 説明: '広範囲に強力な消毒ミストを噴霧する。', dmg: 8, cd: 0.4 / 3, count: 1, area: 150, color: 0xd9ff8a },
@@ -78,6 +85,13 @@ const GAME_CONFIG = {
     { 基本: 'hypo',     必要: 'tank',   結果: 'hypo_evo' },
     { 基本: 'filter',   必要: 'panel',  結果: 'filter_evo' },
     { 基本: 'uv',       必要: 'ph',     結果: 'uv_evo' },
+    { 基本: 'cirri',    必要: 'ph',     結果: 'cirri_evo' },
+    { 基本: 'shell',    必要: 'tank',   結果: 'shell_evo' },
+    { 基本: 'tun',      必要: 'sludge', 結果: 'tun_evo' },
+    { 基本: 'photo',    必要: 'enzyme', 結果: 'photo_evo' },
+    { 基本: 'spine',    必要: 'panel',  結果: 'spine_evo' },
+    { 基本: 'cilia',    必要: 'magnet', 結果: 'cilia_evo' },
+    { 基本: 'sucker',   必要: 'pump',   結果: 'sucker_evo' },
   ],
 
   // ---------- C. 敵キャラクター ----------
@@ -376,6 +390,18 @@ function fireSkill(id) {
       targets.forEach(e => {
         hurt(e, s.dmg);
         R.fx.push({ x1: p.x, y1: p.y - 200, x2: e.x, y2: e.y, t: 0.15, color: d.color });
+        if (d.chain) {
+          let best = null, bd = Infinity;
+          for (const o of R.enemies) {
+            if (o.dead || o === e || targets.includes(o)) continue;
+            const dd = Math.hypot(o.x - e.x, o.y - e.y);
+            if (dd < bd) { bd = dd; best = o; }
+          }
+          if (best) {
+            hurt(best, s.dmg * d.chain);
+            R.fx.push({ x1: e.x, y1: e.y, x2: best.x, y2: best.y, t: 0.15, color: d.color });
+          }
+        }
       });
       return true;
     }
